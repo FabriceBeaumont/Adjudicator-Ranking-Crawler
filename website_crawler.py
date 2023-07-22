@@ -277,10 +277,10 @@ def crawl_links_to_keyword_sites(base_url: str, content_keyword: str, bad_link_p
     
     # Store the computed target site urls to a csv file.
     new_df = pd.DataFrame(target_sites, columns=[f'{content_keyword} urls'])
-    new_df[c.C.BASE_URL] = base_url
-    new_df[c.C.DATE] = date.today()    
-    new_df[c.C.ID] = new_df.index + len(old_df)
-    new_df[c.C.PROCESSED] = 0
+    new_df[c.C.BASE_URL.value] = base_url
+    new_df[c.C.DATE.value] = date.today()    
+    new_df[c.C.ID.value] = new_df.index + len(old_df)
+    new_df[c.C.PROCESSED.value] = 0
 
     # Merge the new dataframe with the existing one - if it exists.
     df_path = c.get_tournament_links_csv_path()
@@ -301,12 +301,12 @@ def crawl_compeititon_links_from_tournament_links():
         return
     tournament_df  = pd.read_csv(c.get_tournament_links_csv_path())
     # Load the competition dataframe.
-    competition_df = pd.DataFrame(columns = [c.C.COMP_LINK.value, c.C.TOUR_LINK.value, c.C.ID])
+    competition_df = pd.DataFrame(columns = [c.C.COMP_LINK.value, c.C.TOUR_LINK.value, c.C.ID.value])
     if os.path.exists(c.get_competition_links_csv_path()):
         competition_df = pd.read_csv(c.get_competition_links_csv_path())
     
     # Iterate through all tournament links, that have not been processed already.    
-    unprocessed_df = tournament_df[tournament_df[c.C.PROCESSED] == 0][[c.C.TOUR_LINK.value, c.C.ID]]
+    unprocessed_df = tournament_df[tournament_df[c.C.PROCESSED.value] == 0][[c.C.TOUR_LINK.value, c.C.ID.value]]
     n: int   = len(unprocessed_df)
     n_ctr: int = 1
     t_progress_str: str = f"Processing unprocessed tournaments ({n_ctr}/{n} - {n_ctr // n * 100}%)"
@@ -318,12 +318,12 @@ def crawl_compeititon_links_from_tournament_links():
         for competition_link in competition_link_list:
             c_progress_str: str = f"competitions ({m_ctr}/{m} - {m_ctr // m * 100}%)"
             print(f"{t_progress_str} -- {c_progress_str}")
-            competition_row = {c.C.COMP_LINK.value: competition_link, c.C.TOUR_LINK.value: tournament_link, c.C.ID: tournament_id}
+            competition_row = {c.C.COMP_LINK.value: competition_link, c.C.TOUR_LINK.value: tournament_link, c.C.ID.value: tournament_id}
             competition_df = competition_df.concat(competition_row, ignore_index=True)            
             m_ctr += 1
 
         # Mark the tournament as processed.
-        tournament_df.loc[tournament_df[c.C.TOUR_LINK.value] == 2, [c.C.PROCESSED]] = 1
+        tournament_df.loc[tournament_df[c.C.TOUR_LINK.value] == 2, [c.C.PROCESSED.value]] = 1
         n_ctr += 1
 
     # Save the updated tournament dataframe (with new progress values set).

@@ -48,11 +48,11 @@ class C(Enum):
     SURNAME: str    = 'Surname'
     NAME: str       = 'Name'
     CLUB: str       = 'Club'
-    COUPLE: str       = 'Paar'
+    COUPLE: str     = 'Paar'
     NR: str         = 'Nr.'
     MAN: str        = 'Man'
     LADY: str       = 'Lady'
-    CLUB: str       = 'Club'
+    RANK: str       = 'Rank'
     
     CONTENT_KEYWORDS: List[str] = ["TopTurnier"]
     URL_KEYWORDS: List[str]     = ['/index.htm']
