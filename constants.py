@@ -38,6 +38,41 @@ urls_hot = [
     "https://tszmittelrhein.de/",
 ]
 
+class dance(Enum):
+    LW_l = "Langsamer Walzer"
+    LW_s = "LW"
+    TG_l = "Tango"
+    TG_s = "TG"
+    WW_l = "Wiener Walzer"
+    WW_s = "WW"
+    SF_l = "Slowfox"
+    SF_s = "SF"
+    QS_l = "Quickstep"
+    QS_s = "QS"
+    SB_l = "Samba"
+    SB_s = "SB"
+    CC_l = "Cha Cha"
+    CC_s = "CC"
+    RB_l = "Rumba"
+    RB_s = "RB"
+    PD_l = "Paso Doble"
+    PD_s = "PD"
+    JV_l = "Jive"
+    JV_s = "JV"
+
+
+def parse_dance_name(dance_name: str) -> str:
+    if dance_name == dance.LW_l.value: return dance.LW_s.value
+    if dance_name == dance.TG_l.value: return dance.TG_s.value
+    if dance_name == dance.WW_l.value: return dance.WW_s.value
+    if dance_name == dance.SF_l.value: return dance.SF_s.value
+    if dance_name == dance.QS_l.value: return dance.QS_s.value
+    if dance_name == dance.SB_l.value: return dance.SB_s.value
+    if dance_name == dance.CC_l.value: return dance.CC_s.value
+    if dance_name == dance.RB_l.value: return dance.RB_s.value
+    if dance_name == dance.PD_l.value: return dance.PD_s.value
+    if dance_name == dance.JV_l.value: return dance.JV_s.value
+
 class C(Enum):
     COMP_NAME: str      = 'Competition name'
     COMP_LINK: str      = 'Competition link' 
