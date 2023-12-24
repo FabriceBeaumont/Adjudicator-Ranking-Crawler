@@ -1,10 +1,12 @@
 from typing import List, Dict, Tuple, Set
 from enum import Enum
+from urllib.parse import urlparse
+
 results_dir: str = "results"
 
-main_url = "https://www.tanzsport.de/de/sportwelt/ergebnisse"
+url_main = "https://www.tanzsport.de/de/sportwelt/ergebnisse"
 
-club_urls = [
+urls_main = [
     "https://www.tanzsportkreis-sankt-augustin.de/",
     "https://ttcrotgoldkoeln.de/",
     "https://www.tscbruehl.de/",
@@ -20,7 +22,7 @@ club_urls = [
     "https://tszmittelrhein.de/",
 ]
 
-hot_urls = [
+urls_hot = [
     "https://www.tanzsportkreis-sankt-augustin.de/veranstaltungen/turnierergebnisse/",
     "https://ttcrotgoldkoeln.de/turniere/",
     "https://www.tscbruehl.de/index.php/service/turnierergebnisse",
@@ -37,33 +39,39 @@ hot_urls = [
 ]
 
 class C(Enum):
-    COMP_NAME: str  = 'Competition name'
-    COMP_LINK: str  = 'Competition link' 
-    TOUR_NAME: str  = 'Tournament name'
-    TOUR_LINK: str  = 'Tournament link'
-    BASE_URL: str   = 'Base url'
-    DATE: str       = 'Crawl date'
-    ID: str         = 'Tournament id'
-    PROCESSED: str  = 'Processed'
-    SURNAME: str    = 'Surname'
-    NAME: str       = 'Name'
-    CLUB: str       = 'Club'
-    COUPLE: str     = 'Paar'
-    NR: str         = 'Nr.'
-    MAN: str        = 'Man'
-    LADY: str       = 'Lady'
-    RANK: str       = 'Rank'
-    
+    COMP_NAME: str      = 'Competition name'
+    COMP_LINK: str      = 'Competition link' 
+    TOUR_NAME: str      = 'Tournament name'
+    TOUR_LINK: str      = 'Tournament link'
+    BASE_URL: str       = 'Base url'
+    DATE: str           = 'Crawl date'
+    ID: str             = 'Tournament id'
+    PROCESSED: str      = 'Processed'
+    SURNAME: str        = 'Surname'
+    NAME: str           = 'Name'
+    CLUB: str           = 'Club'
+    COUPLE: str         = 'Paar'
+    PLACEMENT: str      = 'Platz'
+    NR: str             = 'Nr.'
+    MAN: str            = 'Man'
+    LADY: str           = 'Lady'
+    RANK: str           = 'Rank'
+    GRADE: str          = 'Grade'
+    CATEGORY: str       = 'Category'
+    VALUE: str          = 'Value'
+    KEYWORD_FINAL: str  = 'Endrunde'
     CONTENT_KEYWORDS: List[str] = ["TopTurnier"]
     URL_KEYWORDS: List[str]     = ['/index.htm']
-    
 
 def get_site_name_from_url(url: str) -> str:
     """Strips a given url to the name of the main domain and return it."""
-    site_name: str = (url.replace("https://", "").replace("http://", "").replace("www.", ""))
-    return site_name.split(".")[0]
+    return urlparse(url).netloc
 
 def largest_common_prefix_path(l: List[str]) -> str:
+    """ Returns the largest common prefix path from a list of strings. 
+        This can be used to find the common origin from a list of paths or the
+        common url path from a list of urls.
+    """
     def condition(p: str) -> bool:
         for x in p:
             if not x.startswith(p):
