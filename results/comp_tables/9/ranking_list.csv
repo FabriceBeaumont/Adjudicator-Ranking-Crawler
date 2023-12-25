@@ -1,21 +1,21 @@
-,Platz,Round,Nr.,Paar,Club
-2,1.,Endrunde,6,"Spörl, Sebastian / Rodionova, Kristina ", TSC Rot-Gold-Casino Nürnberg
-3,2.,Endrunde,16,"Brinkmann, Christian / Ostholt, Alena ", Die Residenz Münster
-4,3.,Endrunde,7,"Otto, Sascha / Vollmer, Janne ", TC Der Frankfurter Kreis
-5,4.,Endrunde,2,"Ciomber, Dennis / von Brühl, Julia "," Art of Dance, Köln"
-6,5.,Endrunde,12,"Bohn, Bruno / Bohn, Monika ", TC Schwarz-Weiß Reutlingen
-7,6.,Endrunde,14,"Rybka, Harald / Rybka-Schmidt, Sarah ", TC Rot-Weiss Casino Mainz
-2,7.,1. Zwischenrunde,17,"Turpin, Mark / Turpin, Sina ",TC Rot-Weiss Casino Mainz
-3,8.,1. Zwischenrunde,5,"Steinhäuser, Arnd / Lotsch, Martina ",TanzSportZentrum Braunschweig
-4,9.- 10.,1. Zwischenrunde,3,"Nölle, Jochen / Flohr-Nölle, Tatjana ",Tanzsportclub Dortmund
-5,9.- 10.,1. Zwischenrunde,13,"Müller, René / Pfeffer, Anna Maria ",TSC Savoy München
-6,11.,1. Zwischenrunde,66,"Weber, Christian / Weber, Kim ",TanzZentrum Ludwigshafen
-7,12.,1. Zwischenrunde,1,"Wilhelm, Florian / Friederich, Yvonne ",TSA d. 1. SC Norderstedt
-10,13.,Vorrunde,20,"Knittel, Gordon / Rührmund, Isabelle ",btc Grün-Gold der Turngemeinde in Berlin 1848
-11,14.,Vorrunde,18,"Walz, Marco / Hopfgarten, Christina ",TSG Leverkusen
-12,15.,Vorrunde,8,"Schröder, Karsten / Rothe, Christine ",Askania - TSC Berlin
-13,16.- 17.,Vorrunde,9,"Adrian, Claudius / Fischer-Adrian, Andrea ",TSC Rot-Gold-Casino Nürnberg
-14,16.- 17.,Vorrunde,19,"Paar, Thorsten / Steinebach, Sandra ",TD Tanzsportclub Düsseldorf Rot-Weiß
-15,18.,Vorrunde,10,"Exner, Benjamin / Exner, Valeska ",TSA im TSV Neudorf 1913
-16,19.,Vorrunde,4,"Pfitzner, Ralf / Pfitzner, Eva ",1. TGC Redoute Koblenz + Neuwied
-17,20.,Vorrunde,15,"Schrader, Markus / Utermark, Anja ",Braunschweig Dance Company
+Nr.,Platz,Round,Paar,Club
+6,1.,Endrunde,"Spörl, Sebastian / Rodionova, Kristina ", TSC Rot-Gold-Casino Nürnberg
+16,2.,Endrunde,"Brinkmann, Christian / Ostholt, Alena ", Die Residenz Münster
+7,3.,Endrunde,"Otto, Sascha / Vollmer, Janne ", TC Der Frankfurter Kreis
+2,4.,Endrunde,"Ciomber, Dennis / von Brühl, Julia "," Art of Dance, Köln"
+12,5.,Endrunde,"Bohn, Bruno / Bohn, Monika ", TC Schwarz-Weiß Reutlingen
+14,6.,Endrunde,"Rybka, Harald / Rybka-Schmidt, Sarah ", TC Rot-Weiss Casino Mainz
+17,7.,1. Zwischenrunde,"Turpin, Mark / Turpin, Sina ",TC Rot-Weiss Casino Mainz
+5,8.,1. Zwischenrunde,"Steinhäuser, Arnd / Lotsch, Martina ",TanzSportZentrum Braunschweig
+3,9.- 10.,1. Zwischenrunde,"Nölle, Jochen / Flohr-Nölle, Tatjana ",Tanzsportclub Dortmund
+13,9.- 10.,1. Zwischenrunde,"Müller, René / Pfeffer, Anna Maria ",TSC Savoy München
+66,11.,1. Zwischenrunde,"Weber, Christian / Weber, Kim ",TanzZentrum Ludwigshafen
+1,12.,1. Zwischenrunde,"Wilhelm, Florian / Friederich, Yvonne ",TSA d. 1. SC Norderstedt
+20,13.,Vorrunde,"Knittel, Gordon / Rührmund, Isabelle ",btc Grün-Gold der Turngemeinde in Berlin 1848
+18,14.,Vorrunde,"Walz, Marco / Hopfgarten, Christina ",TSG Leverkusen
+8,15.,Vorrunde,"Schröder, Karsten / Rothe, Christine ",Askania - TSC Berlin
+9,16.- 17.,Vorrunde,"Adrian, Claudius / Fischer-Adrian, Andrea ",TSC Rot-Gold-Casino Nürnberg
+19,16.- 17.,Vorrunde,"Paar, Thorsten / Steinebach, Sandra ",TD Tanzsportclub Düsseldorf Rot-Weiß
+10,18.,Vorrunde,"Exner, Benjamin / Exner, Valeska ",TSA im TSV Neudorf 1913
+4,19.,Vorrunde,"Pfitzner, Ralf / Pfitzner, Eva ",1. TGC Redoute Koblenz + Neuwied
+15,20.,Vorrunde,"Schrader, Markus / Utermark, Anja ",Braunschweig Dance Company
