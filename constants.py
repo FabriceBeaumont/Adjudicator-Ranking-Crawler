@@ -38,6 +38,12 @@ urls_hot = [
     "https://tszmittelrhein.de/",
 ]
 
+class filenames(Enum):
+    general_info = "general_info.csv"
+    quali_roundx = "quali_round{}.csv"
+    finals       = "finals.csv"
+    ranking_lst  = "ranking.csv"
+
 class dance(Enum):
     LW_l = "Langsamer Walzer"
     LW_s = "LW"
@@ -60,6 +66,39 @@ class dance(Enum):
     JV_l = "Jive"
     JV_s = "JV"
 
+class C_all(Enum):
+    COMP_NAME: str      = 'Competition name'
+    COMP_LINK: str      = 'Competition link' 
+    TOUR_NAME: str      = 'Tournament name'
+    TOUR_LINK: str      = 'Tournament link'
+    BASE_URL: str       = 'Base url'
+    DATE: str           = 'Crawl date'
+    ID: str             = 'Tournament id'
+    PROCESSED: str      = 'Processed'
+
+class C_de(Enum):
+    SURNAME: str        = 'Surname'
+    NAME: str           = 'Name'
+    CLUB: str           = 'Club'
+    COUPLE: str         = 'Paar'
+    PLACEMENT: str      = 'Platz'
+    NR: str             = 'Nr.'
+    MAN: str            = 'Man'
+    LADY: str           = 'Lady'
+    RANK: str           = 'Rank'
+    DANCE: str          = 'Dance'
+    ROUND: str          = 'Round'
+    GRADE: str          = 'Grade'
+    CATEGORY: str       = 'Category'
+    VALUE: str          = 'Value'
+    KEYWORD_FINAL: str  = 'Endrunde'
+    SUM: str            = 'Sum'
+    QUALI: str          = 'Qualified'
+    NR_ROUNDS: str      = 'Nr. Rounds + Final'   
+    NR_ADJDCTRS: str    = 'Nr. Adjudicators'
+    NR_COUPLES: str     = 'Nr. Couples'
+    CONTENT_KEYWORDS: List[str] = ["TopTurnier"]
+    URL_KEYWORDS: List[str]     = ['/index.htm']
 
 def parse_dance_name(dance_name: str) -> str:
     if dance_name == dance.LW_l.value: return dance.LW_s.value
@@ -72,31 +111,6 @@ def parse_dance_name(dance_name: str) -> str:
     if dance_name == dance.RB_l.value: return dance.RB_s.value
     if dance_name == dance.PD_l.value: return dance.PD_s.value
     if dance_name == dance.JV_l.value: return dance.JV_s.value
-
-class C(Enum):
-    COMP_NAME: str      = 'Competition name'
-    COMP_LINK: str      = 'Competition link' 
-    TOUR_NAME: str      = 'Tournament name'
-    TOUR_LINK: str      = 'Tournament link'
-    BASE_URL: str       = 'Base url'
-    DATE: str           = 'Crawl date'
-    ID: str             = 'Tournament id'
-    PROCESSED: str      = 'Processed'
-    SURNAME: str        = 'Surname'
-    NAME: str           = 'Name'
-    CLUB: str           = 'Club'
-    COUPLE: str         = 'Paar'
-    PLACEMENT: str      = 'Platz'
-    NR: str             = 'Nr.'
-    MAN: str            = 'Man'
-    LADY: str           = 'Lady'
-    RANK: str           = 'Rank'
-    GRADE: str          = 'Grade'
-    CATEGORY: str       = 'Category'
-    VALUE: str          = 'Value'
-    KEYWORD_FINAL: str  = 'Endrunde'
-    CONTENT_KEYWORDS: List[str] = ["TopTurnier"]
-    URL_KEYWORDS: List[str]     = ['/index.htm']
 
 def get_site_name_from_url(url: str) -> str:
     """Strips a given url to the name of the main domain and return it."""
