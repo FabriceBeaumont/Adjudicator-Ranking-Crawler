@@ -1,40 +1,40 @@
-Nr.,Platz,Round,Paar,Club
-13,1.,Endrunde,Tomas Fainsil / Violetta Fainsil , TSC Astoria Stuttgart
-43,2.,Endrunde,Dominik Stöckl / Anna Gommer , Bielefelder TC Metropol
-24,3.,Endrunde,Erik Kem / Viktoria Grusevskaja , Tanzsportclub Dortmund
-6,4.,Endrunde,Emanuele Cannistraro / Anna Lubianetska , Schwarz-Weiß-Club Pforzheim
-45,5.,Endrunde,Lukasz Switalski / Natalia Mikolajczyk , Tanzsportzentrum Dresden
-30,6.,Endrunde,William Lauth / Julia Maria Scherer , TSC Landau i.d. Pfalz
-7,7.,2. Zwischenrunde,Matteo Cesaretti / Emily Matthies ,Grün-Gold-Club Bremen
-48,8.,2. Zwischenrunde,Mykyta Zherdiev / Fabien Lax ,TSC Rot-Gold-Casino Nürnberg
-2,9.,2. Zwischenrunde,Philip Andraus / Ekaterina Tsvetkova ,TTC Fortis Nova Maintal
-17,10.,2. Zwischenrunde,Jan Goerling / Hanna Kalpakidis ,Blau-Silber Berlin Tanzsportclub
-38,11.,2. Zwischenrunde,Cristian Pop / Celine Sejdijaj ,Schwarz-Weiß-Club Pforzheim
-25,12.,2. Zwischenrunde,Joshua Khadjeh-Nouri / Jadzia Khadjeh-Nouri ,Tanzsportclub Astoria Norderstedt
-36,13.,2. Zwischenrunde,Max Naumann / Konstanze Freitag ,TC Rot-Weiß Leipzig
-27,14.,1. Zwischenrunde,Christoph Konetschny / Amelie Pfeifenberger ,TSC Brühl im BTV 1879
-1,15.,1. Zwischenrunde,Luc Broder Albrecht / Luise Maul ,Tanzsportgemeinschaft Nordhorn
-35,16.,1. Zwischenrunde,Markus Mütt / Lea Mirmov ,Grün-Gold-Casino Wuppertal
-42,17.,1. Zwischenrunde,Peter Spasov / Jennifer Busta ,TSC Brühl im BTV 1879
-29,18.,1. Zwischenrunde,Krisztian Kulják / Sophia Schnobrich ,TSC Rot-Gold-Casino Nürnberg
-9,19.- 21.,1. Zwischenrunde,Dominik Depner / Lea Baier ,TSC Rot-Gold-Casino Nürnberg
-26,19.- 21.,1. Zwischenrunde,Kevin Khan / Anna Cheban ,TSA d. 1. SC Norderstedt
-41,19.- 21.,1. Zwischenrunde,Tobias Solymosi / Angelika Solymosi ,TSK Sankt Augustin
-18,22.- 23.,1. Zwischenrunde,David Goldort / Angelina Helbing ,Grün-Gold-Casino Wuppertal
-32,22.- 23.,1. Zwischenrunde,Michael Merz / Annika-Emelie Hirschmann ,TSC Rot-Gold-Casino Nürnberg
-16,24.,1. Zwischenrunde,Lukas Gandor / Natalie Pusch ,Boston-Club Düsseldorf
-33,25.,1. Zwischenrunde,Marcel Michalik / Nina Hillenbrand ,TC Blau-Orange Wiesbaden
-49,26.,Vorrunde,Mauro Bierti / Cindy Jörgens ,Tanzsportzentrum Blau Gold Berlin
-4,27.- 28.,Vorrunde,Nils Benger / Ann-Christin Baier ,Blau-Silber Berlin Tanzsportclub
-8,27.- 28.,Vorrunde,Antonio Curcio / Antonia Bein ,Gelb-Schwarz-Casino München
-31,29.,Vorrunde,Vincent Ludley / Lilja Schreiber ,Blau-Silber Berlin Tanzsportclub
-14,30.- 31.,Vorrunde,Marvin Fischer / Daphne Fischer ,TSC Rot-Weiß Böblingen
-44,30.- 31.,Vorrunde,Calvin Strauß / Katharina Wichmann ,Askania - TSC Berlin
-34,32.,Vorrunde,Vlad Constantin Milinovici / Victoria Ghadiri ,Braunschweiger TSC
-23,33.,Vorrunde,Yoan Iliev / Sophia Maria Kiesel ,TSC Schwarz-Gelb Aachen
-20,34.- 35.,Vorrunde,Nils-Arne Herold / Johanna Frei ,1. TC Ludwigsburg
-37,34.- 35.,Vorrunde,Julian Pfersich / Christiane Roth ,TSC Rot-Weiss Viernheim
-5,36.,Vorrunde,Moritz Büttner / Isa-Bella Claudia Muschter ,Tanzsportzentrum Leipzig
-40,37.,Vorrunde,Marcel Schumann / Anja Schumann ,TSC Nordlicht Rostock
-28,38.- 39.,Vorrunde,Jens Kothe / Vanessa Gergert ,Tanzsportzentrum Stuttgart-Feuerbach
-47,38.- 39.,2. Zwischenrunde,Patrick Vrielmann / Marit Vrielmann ,TTC Gelb-Weiss i. Post-SV Hannover
+Nr.,Platz,Runde,Paar,Club,Leader,Follower
+13,1.,Endrunde,Tomas Fainsil / Violetta Fainsil , TSC Astoria Stuttgart,Tomas Fainsil,Violetta Fainsil 
+43,2.,Endrunde,Dominik Stöckl / Anna Gommer , Bielefelder TC Metropol,Dominik Stöckl,Anna Gommer 
+24,3.,Endrunde,Erik Kem / Viktoria Grusevskaja , Tanzsportclub Dortmund,Erik Kem,Viktoria Grusevskaja 
+6,4.,Endrunde,Emanuele Cannistraro / Anna Lubianetska , Schwarz-Weiß-Club Pforzheim,Emanuele Cannistraro,Anna Lubianetska 
+45,5.,Endrunde,Lukasz Switalski / Natalia Mikolajczyk , Tanzsportzentrum Dresden,Lukasz Switalski,Natalia Mikolajczyk 
+30,6.,Endrunde,William Lauth / Julia Maria Scherer , TSC Landau i.d. Pfalz,William Lauth,Julia Maria Scherer 
+7,7.,2. Zwischenrunde,Matteo Cesaretti / Emily Matthies ,Grün-Gold-Club Bremen,Matteo Cesaretti,Emily Matthies 
+48,8.,2. Zwischenrunde,Mykyta Zherdiev / Fabien Lax ,TSC Rot-Gold-Casino Nürnberg,Mykyta Zherdiev,Fabien Lax 
+2,9.,2. Zwischenrunde,Philip Andraus / Ekaterina Tsvetkova ,TTC Fortis Nova Maintal,Philip Andraus,Ekaterina Tsvetkova 
+17,10.,2. Zwischenrunde,Jan Goerling / Hanna Kalpakidis ,Blau-Silber Berlin Tanzsportclub,Jan Goerling,Hanna Kalpakidis 
+38,11.,2. Zwischenrunde,Cristian Pop / Celine Sejdijaj ,Schwarz-Weiß-Club Pforzheim,Cristian Pop,Celine Sejdijaj 
+25,12.,2. Zwischenrunde,Joshua Khadjeh-Nouri / Jadzia Khadjeh-Nouri ,Tanzsportclub Astoria Norderstedt,Joshua Khadjeh-Nouri,Jadzia Khadjeh-Nouri 
+36,13.,2. Zwischenrunde,Max Naumann / Konstanze Freitag ,TC Rot-Weiß Leipzig,Max Naumann,Konstanze Freitag 
+27,14.,1. Zwischenrunde,Christoph Konetschny / Amelie Pfeifenberger ,TSC Brühl im BTV 1879,Christoph Konetschny,Amelie Pfeifenberger 
+1,15.,1. Zwischenrunde,Luc Broder Albrecht / Luise Maul ,Tanzsportgemeinschaft Nordhorn,Luc Broder Albrecht,Luise Maul 
+35,16.,1. Zwischenrunde,Markus Mütt / Lea Mirmov ,Grün-Gold-Casino Wuppertal,Markus Mütt,Lea Mirmov 
+42,17.,1. Zwischenrunde,Peter Spasov / Jennifer Busta ,TSC Brühl im BTV 1879,Peter Spasov,Jennifer Busta 
+29,18.,1. Zwischenrunde,Krisztian Kulják / Sophia Schnobrich ,TSC Rot-Gold-Casino Nürnberg,Krisztian Kulják,Sophia Schnobrich 
+9,19.- 21.,1. Zwischenrunde,Dominik Depner / Lea Baier ,TSC Rot-Gold-Casino Nürnberg,Dominik Depner,Lea Baier 
+26,19.- 21.,1. Zwischenrunde,Kevin Khan / Anna Cheban ,TSA d. 1. SC Norderstedt,Kevin Khan,Anna Cheban 
+41,19.- 21.,1. Zwischenrunde,Tobias Solymosi / Angelika Solymosi ,TSK Sankt Augustin,Tobias Solymosi,Angelika Solymosi 
+18,22.- 23.,1. Zwischenrunde,David Goldort / Angelina Helbing ,Grün-Gold-Casino Wuppertal,David Goldort,Angelina Helbing 
+32,22.- 23.,1. Zwischenrunde,Michael Merz / Annika-Emelie Hirschmann ,TSC Rot-Gold-Casino Nürnberg,Michael Merz,Annika-Emelie Hirschmann 
+16,24.,1. Zwischenrunde,Lukas Gandor / Natalie Pusch ,Boston-Club Düsseldorf,Lukas Gandor,Natalie Pusch 
+33,25.,1. Zwischenrunde,Marcel Michalik / Nina Hillenbrand ,TC Blau-Orange Wiesbaden,Marcel Michalik,Nina Hillenbrand 
+49,26.,Vorrunde,Mauro Bierti / Cindy Jörgens ,Tanzsportzentrum Blau Gold Berlin,Mauro Bierti,Cindy Jörgens 
+4,27.- 28.,Vorrunde,Nils Benger / Ann-Christin Baier ,Blau-Silber Berlin Tanzsportclub,Nils Benger,Ann-Christin Baier 
+8,27.- 28.,Vorrunde,Antonio Curcio / Antonia Bein ,Gelb-Schwarz-Casino München,Antonio Curcio,Antonia Bein 
+31,29.,Vorrunde,Vincent Ludley / Lilja Schreiber ,Blau-Silber Berlin Tanzsportclub,Vincent Ludley,Lilja Schreiber 
+14,30.- 31.,Vorrunde,Marvin Fischer / Daphne Fischer ,TSC Rot-Weiß Böblingen,Marvin Fischer,Daphne Fischer 
+44,30.- 31.,Vorrunde,Calvin Strauß / Katharina Wichmann ,Askania - TSC Berlin,Calvin Strauß,Katharina Wichmann 
+34,32.,Vorrunde,Vlad Constantin Milinovici / Victoria Ghadiri ,Braunschweiger TSC,Vlad Constantin Milinovici,Victoria Ghadiri 
+23,33.,Vorrunde,Yoan Iliev / Sophia Maria Kiesel ,TSC Schwarz-Gelb Aachen,Yoan Iliev,Sophia Maria Kiesel 
+20,34.- 35.,Vorrunde,Nils-Arne Herold / Johanna Frei ,1. TC Ludwigsburg,Nils-Arne Herold,Johanna Frei 
+37,34.- 35.,Vorrunde,Julian Pfersich / Christiane Roth ,TSC Rot-Weiss Viernheim,Julian Pfersich,Christiane Roth 
+5,36.,Vorrunde,Moritz Büttner / Isa-Bella Claudia Muschter ,Tanzsportzentrum Leipzig,Moritz Büttner,Isa-Bella Claudia Muschter 
+40,37.,Vorrunde,Marcel Schumann / Anja Schumann ,TSC Nordlicht Rostock,Marcel Schumann,Anja Schumann 
+28,38.- 39.,Vorrunde,Jens Kothe / Vanessa Gergert ,Tanzsportzentrum Stuttgart-Feuerbach,Jens Kothe,Vanessa Gergert 
+47,38.- 39.,Vorrunde,Patrick Vrielmann / Marit Vrielmann ,TTC Gelb-Weiss i. Post-SV Hannover,Patrick Vrielmann,Marit Vrielmann 

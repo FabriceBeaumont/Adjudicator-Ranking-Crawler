@@ -1,21 +1,21 @@
-Nr.,Platz,Round,Paar,Club
-6,1.,Endrunde,"Spörl, Sebastian / Rodionova, Kristina ", TSC Rot-Gold-Casino Nürnberg
-16,2.,Endrunde,"Brinkmann, Christian / Ostholt, Alena ", Die Residenz Münster
-7,3.,Endrunde,"Otto, Sascha / Vollmer, Janne ", TC Der Frankfurter Kreis
-2,4.,Endrunde,"Ciomber, Dennis / von Brühl, Julia "," Art of Dance, Köln"
-12,5.,Endrunde,"Bohn, Bruno / Bohn, Monika ", TC Schwarz-Weiß Reutlingen
-14,6.,Endrunde,"Rybka, Harald / Rybka-Schmidt, Sarah ", TC Rot-Weiss Casino Mainz
-17,7.,1. Zwischenrunde,"Turpin, Mark / Turpin, Sina ",TC Rot-Weiss Casino Mainz
-5,8.,1. Zwischenrunde,"Steinhäuser, Arnd / Lotsch, Martina ",TanzSportZentrum Braunschweig
-3,9.- 10.,1. Zwischenrunde,"Nölle, Jochen / Flohr-Nölle, Tatjana ",Tanzsportclub Dortmund
-13,9.- 10.,1. Zwischenrunde,"Müller, René / Pfeffer, Anna Maria ",TSC Savoy München
-66,11.,1. Zwischenrunde,"Weber, Christian / Weber, Kim ",TanzZentrum Ludwigshafen
-1,12.,1. Zwischenrunde,"Wilhelm, Florian / Friederich, Yvonne ",TSA d. 1. SC Norderstedt
-20,13.,Vorrunde,"Knittel, Gordon / Rührmund, Isabelle ",btc Grün-Gold der Turngemeinde in Berlin 1848
-18,14.,Vorrunde,"Walz, Marco / Hopfgarten, Christina ",TSG Leverkusen
-8,15.,Vorrunde,"Schröder, Karsten / Rothe, Christine ",Askania - TSC Berlin
-9,16.- 17.,Vorrunde,"Adrian, Claudius / Fischer-Adrian, Andrea ",TSC Rot-Gold-Casino Nürnberg
-19,16.- 17.,Vorrunde,"Paar, Thorsten / Steinebach, Sandra ",TD Tanzsportclub Düsseldorf Rot-Weiß
-10,18.,Vorrunde,"Exner, Benjamin / Exner, Valeska ",TSA im TSV Neudorf 1913
-4,19.,Vorrunde,"Pfitzner, Ralf / Pfitzner, Eva ",1. TGC Redoute Koblenz + Neuwied
-15,20.,Vorrunde,"Schrader, Markus / Utermark, Anja ",Braunschweig Dance Company
+Nr.,Platz,Runde,Paar,Club,Leader,Follower
+6,1.,Endrunde,"Spörl, Sebastian / Rodionova, Kristina ", TSC Rot-Gold-Casino Nürnberg,"Spörl, Sebastian","Rodionova, Kristina "
+16,2.,Endrunde,"Brinkmann, Christian / Ostholt, Alena ", Die Residenz Münster,"Brinkmann, Christian","Ostholt, Alena "
+7,3.,Endrunde,"Otto, Sascha / Vollmer, Janne ", TC Der Frankfurter Kreis,"Otto, Sascha","Vollmer, Janne "
+2,4.,Endrunde,"Ciomber, Dennis / von Brühl, Julia "," Art of Dance, Köln","Ciomber, Dennis","von Brühl, Julia "
+12,5.,Endrunde,"Bohn, Bruno / Bohn, Monika ", TC Schwarz-Weiß Reutlingen,"Bohn, Bruno","Bohn, Monika "
+14,6.,Endrunde,"Rybka, Harald / Rybka-Schmidt, Sarah ", TC Rot-Weiss Casino Mainz,"Rybka, Harald","Rybka-Schmidt, Sarah "
+17,7.,1. Zwischenrunde,"Turpin, Mark / Turpin, Sina ",TC Rot-Weiss Casino Mainz,"Turpin, Mark","Turpin, Sina "
+5,8.,1. Zwischenrunde,"Steinhäuser, Arnd / Lotsch, Martina ",TanzSportZentrum Braunschweig,"Steinhäuser, Arnd","Lotsch, Martina "
+3,9.- 10.,1. Zwischenrunde,"Nölle, Jochen / Flohr-Nölle, Tatjana ",Tanzsportclub Dortmund,"Nölle, Jochen","Flohr-Nölle, Tatjana "
+13,9.- 10.,1. Zwischenrunde,"Müller, René / Pfeffer, Anna Maria ",TSC Savoy München,"Müller, René","Pfeffer, Anna Maria "
+66,11.,1. Zwischenrunde,"Weber, Christian / Weber, Kim ",TanzZentrum Ludwigshafen,"Weber, Christian","Weber, Kim "
+1,12.,1. Zwischenrunde,"Wilhelm, Florian / Friederich, Yvonne ",TSA d. 1. SC Norderstedt,"Wilhelm, Florian","Friederich, Yvonne "
+20,13.,Vorrunde,"Knittel, Gordon / Rührmund, Isabelle ",btc Grün-Gold der Turngemeinde in Berlin 1848,"Knittel, Gordon","Rührmund, Isabelle "
+18,14.,Vorrunde,"Walz, Marco / Hopfgarten, Christina ",TSG Leverkusen,"Walz, Marco","Hopfgarten, Christina "
+8,15.,Vorrunde,"Schröder, Karsten / Rothe, Christine ",Askania - TSC Berlin,"Schröder, Karsten","Rothe, Christine "
+9,16.- 17.,Vorrunde,"Adrian, Claudius / Fischer-Adrian, Andrea ",TSC Rot-Gold-Casino Nürnberg,"Adrian, Claudius","Fischer-Adrian, Andrea "
+19,16.- 17.,Vorrunde,"Paar, Thorsten / Steinebach, Sandra ",TD Tanzsportclub Düsseldorf Rot-Weiß,"Paar, Thorsten","Steinebach, Sandra "
+10,18.,Vorrunde,"Exner, Benjamin / Exner, Valeska ",TSA im TSV Neudorf 1913,"Exner, Benjamin","Exner, Valeska "
+4,19.,Vorrunde,"Pfitzner, Ralf / Pfitzner, Eva ",1. TGC Redoute Koblenz + Neuwied,"Pfitzner, Ralf","Pfitzner, Eva "
+15,20.,Vorrunde,"Schrader, Markus / Utermark, Anja ",Braunschweig Dance Company,"Schrader, Markus","Utermark, Anja "

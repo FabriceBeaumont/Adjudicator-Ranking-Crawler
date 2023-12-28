@@ -58,13 +58,14 @@ class C_all(ABC):
     PROCESSED: str      = 'Processed'
     SURNAME: str        = 'Surname'
     NAME: str           = 'Name'
-    MAN: str            = 'Man'
-    LADY: str           = 'Lady'
+    LEADER: str         = 'Leader'
+    FOLLOWER: str       = 'Follower'
     CLUB: str           = 'Club'
     # The rank refers to the placement in the ranking (first place until last place).
     RANK: str           = 'Rank'
     # The placement refers to any points in any computation while computing the ranks.
     PLACEMENT: str      = 'Placement'
+
     DANCE: str          = 'Dance'
     ROUND: str          = 'Round'
     GRADE: str          = 'Grade'
@@ -80,6 +81,16 @@ class C_all(ABC):
 
     KEY_CONTENT: List[str]      = ["TopTurnier"]
     KEY_URL_ANCHOR: List[str]   = ['/index.htm']
+    
+    KEY_ORGANZIER: str          = 'Organizer:'
+    KEY_MASTER_OF_CEREMONY: str = 'Master of Ceremony:' 
+    COUPLE: str                 = 'Couple'
+    PLACEMENT: str              = 'Placement'
+    # The number is the identifyer number of the couple in the tournament.
+    NR: str                     = 'Nr.'
+    KEY_FINAL: str              = 'Final'
+    KEY_ROUND: str              = 'round'
+    KEY_ADJUDICATOR: str        = 'Adjudicator'
 
     LW_l = "Waltz"    
     LW_s = "SW"
@@ -107,7 +118,7 @@ class C_all(ABC):
 
     @classmethod
     def get_organizer_keys(self) -> List[str]:
-        return ['Organizer:', 'Master of Ceremony:']
+        return [self.KEY_ORGANZIER, self.KEY_MASTER_OF_CEREMONY]
     
     @classmethod
     def get_dancenames_short(self) -> List[str]:
@@ -130,23 +141,25 @@ class C_en(C_all):
     def __init__(self):
         super().__init__()
 
-class C_de(C_all):
-    COUPLE: str             = 'Paar'
-    PLACEMENT: str          = 'Platz'
-    NR: str                 = 'Nr.'
-    KEY_FINAL: str          = 'Endrunde'
-    
+class C_de(C_all):    
     # Define the dance names in german.
     LW_l = "Langsamer Walzer"
     LW_s = "LW"
     WW_l = "Wiener Walzer"
     WW_s = "WW"
 
+    KEY_ORGANZIER = 'Veranstalter:'    
+    KEY_MASTER_OF_CEREMONY = 'Ausrichter:'
+    COUPLE = 'Paar'
+    PLACEMENT = 'Platz'
+    ROUND = 'Runde'
+    NR = 'Nr.'
+    KEY_FINAL = 'Endrunde'
+    KEY_ROUND = 'runde'
+    KEY_ADJUDICATOR = 'Wertungsrichter'
+
     def __init__(self):
         super().__init__()
-    
-    def get_organizer_keys(self):
-        return ['Veranstalter:', 'Ausrichter:']
 
 
 get_constants_in_language = {
