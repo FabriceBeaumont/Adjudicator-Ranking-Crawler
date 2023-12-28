@@ -1,6 +1,7 @@
 from typing import List, Dict, Tuple, Set
 from enum import Enum
 from urllib.parse import urlparse
+from abc import ABC, abstractmethod
 
 results_dir: str = "results"
 
@@ -43,14 +44,49 @@ class filenames(Enum):
     quali_roundx = "quali_round{}.csv"
     finals       = "finals.csv"
     ranking_lst  = "ranking.csv"
+    adjudicators = "adjudicators.csv"
 
-class dance(Enum):
-    LW_l = "Langsamer Walzer"
-    LW_s = "LW"
+class C_all(ABC):
+    # Local keywords
+    COMP_NAME: str      = 'Competition name'
+    COMP_LINK: str      = 'Competition link' 
+    TOUR_NAME: str      = 'Tournament name'
+    TOUR_LINK: str      = 'Tournament link'
+    BASE_URL: str       = 'Base url'
+    DATE: str           = 'Crawl date'
+    ID: str             = 'Tournament id'
+    PROCESSED: str      = 'Processed'
+    SURNAME: str        = 'Surname'
+    NAME: str           = 'Name'
+    MAN: str            = 'Man'
+    LADY: str           = 'Lady'
+    CLUB: str           = 'Club'
+    # The rank refers to the placement in the ranking (first place until last place).
+    RANK: str           = 'Rank'
+    # The placement refers to any points in any computation while computing the ranks.
+    PLACEMENT: str      = 'Placement'
+    DANCE: str          = 'Dance'
+    ROUND: str          = 'Round'
+    GRADE: str          = 'Grade'
+
+    CATEGORY: str       = 'Category'
+    VALUE: str          = 'Value'
+    
+    SUM: str            = 'Sum'
+    QUALI: str          = 'Qualified'
+    NR_ROUNDS: str      = 'Nr. Rounds + Final'   
+    NR_ADJDCTRS: str    = 'Nr. Adjudicators'
+    NR_COUPLES: str     = 'Nr. Couples'
+
+    KEY_CONTENT: List[str]      = ["TopTurnier"]
+    KEY_URL_ANCHOR: List[str]   = ['/index.htm']
+
+    LW_l = "Waltz"    
+    LW_s = "SW"
     TG_l = "Tango"
     TG_s = "TG"
-    WW_l = "Wiener Walzer"
-    WW_s = "WW"
+    WW_l = "V. Waltz"
+    WW_s = "VW"
     SF_l = "Slowfox"
     SF_s = "SF"
     QS_l = "Quickstep"
@@ -66,51 +102,70 @@ class dance(Enum):
     JV_l = "Jive"
     JV_s = "JV"
 
-class C_all(Enum):
-    COMP_NAME: str      = 'Competition name'
-    COMP_LINK: str      = 'Competition link' 
-    TOUR_NAME: str      = 'Tournament name'
-    TOUR_LINK: str      = 'Tournament link'
-    BASE_URL: str       = 'Base url'
-    DATE: str           = 'Crawl date'
-    ID: str             = 'Tournament id'
-    PROCESSED: str      = 'Processed'
+    def __init__(self):
+        pass
 
-class C_de(Enum):
-    SURNAME: str        = 'Surname'
-    NAME: str           = 'Name'
-    CLUB: str           = 'Club'
-    COUPLE: str         = 'Paar'
-    PLACEMENT: str      = 'Platz'
-    NR: str             = 'Nr.'
-    MAN: str            = 'Man'
-    LADY: str           = 'Lady'
-    RANK: str           = 'Rank'
-    DANCE: str          = 'Dance'
-    ROUND: str          = 'Round'
-    GRADE: str          = 'Grade'
-    CATEGORY: str       = 'Category'
-    VALUE: str          = 'Value'
-    KEYWORD_FINAL: str  = 'Endrunde'
-    SUM: str            = 'Sum'
-    QUALI: str          = 'Qualified'
-    NR_ROUNDS: str      = 'Nr. Rounds + Final'   
-    NR_ADJDCTRS: str    = 'Nr. Adjudicators'
-    NR_COUPLES: str     = 'Nr. Couples'
-    CONTENT_KEYWORDS: List[str] = ["TopTurnier"]
-    URL_KEYWORDS: List[str]     = ['/index.htm']
+    @classmethod
+    def get_organizer_keys(self) -> List[str]:
+        return ['Organizer:', 'Master of Ceremony:']
+    
+    @classmethod
+    def get_dancenames_short(self) -> List[str]:
+        return [self.LW_s, self.TG_s, self.WW_s, self.SF_s, self.QS_s, self.SB_s, self.CC_s, self.RB_s, self.PD_s, self.JV_s]
+    
+    @classmethod
+    def parse_dance_name(self, dance_name: str) -> str:
+        if dance_name == self.LW_l: return self.LW_s
+        if dance_name == self.TG_l: return self.TG_s
+        if dance_name == self.WW_l: return self.WW_s
+        if dance_name == self.SF_l: return self.SF_s
+        if dance_name == self.QS_l: return self.QS_s
+        if dance_name == self.SB_l: return self.SB_s
+        if dance_name == self.CC_l: return self.CC_s
+        if dance_name == self.RB_l: return self.RB_s
+        if dance_name == self.PD_l: return self.PD_s
+        if dance_name == self.JV_l: return self.JV_s
 
-def parse_dance_name(dance_name: str) -> str:
-    if dance_name == dance.LW_l.value: return dance.LW_s.value
-    if dance_name == dance.TG_l.value: return dance.TG_s.value
-    if dance_name == dance.WW_l.value: return dance.WW_s.value
-    if dance_name == dance.SF_l.value: return dance.SF_s.value
-    if dance_name == dance.QS_l.value: return dance.QS_s.value
-    if dance_name == dance.SB_l.value: return dance.SB_s.value
-    if dance_name == dance.CC_l.value: return dance.CC_s.value
-    if dance_name == dance.RB_l.value: return dance.RB_s.value
-    if dance_name == dance.PD_l.value: return dance.PD_s.value
-    if dance_name == dance.JV_l.value: return dance.JV_s.value
+class C_en(C_all):
+    def __init__(self):
+        super().__init__()
+
+class C_de(C_all):
+    COUPLE: str             = 'Paar'
+    PLACEMENT: str          = 'Platz'
+    NR: str                 = 'Nr.'
+    KEY_FINAL: str          = 'Endrunde'
+    
+    # Define the dance names in german.
+    LW_l = "Langsamer Walzer"
+    LW_s = "LW"
+    WW_l = "Wiener Walzer"
+    WW_s = "WW"
+
+    def __init__(self):
+        super().__init__()
+    
+    def get_organizer_keys(self):
+        return ['Veranstalter:', 'Ausrichter:']
+
+
+get_constants_in_language = {
+    'de': C_de(),
+    'en': C_en()
+}
+
+def parse_dance_name(dance_name: str, const_class) -> str:
+    if dance_name == const_class.LW_l: return const_class.LW_s
+    if dance_name == const_class.TG_l: return const_class.TG_s
+    if dance_name == const_class.WW_l: return const_class.WW_s
+    if dance_name == const_class.SF_l: return const_class.SF_s
+    if dance_name == const_class.QS_l: return const_class.QS_s
+    if dance_name == const_class.SB_l: return const_class.SB_s
+    if dance_name == const_class.CC_l: return const_class.CC_s
+    if dance_name == const_class.RB_l: return const_class.RB_s
+    if dance_name == const_class.PD_l: return const_class.PD_s
+    if dance_name == const_class.JV_l: return const_class.JV_s
+
 
 def get_site_name_from_url(url: str) -> str:
     """Strips a given url to the name of the main domain and return it."""
