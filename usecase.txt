@@ -1,0 +1,23 @@
+
+    BASE (do not change automatically):
+    - list of federal states collection of clus (club_finders)
+
+
+MAINTAIN CLUBS:
+- using the BASE, crawl for club websites that are not already stored in the clubs list (clubs).
+- using the clubs list, crawl for clubs sites, that seem to point to multiple tournament sites
+
+MAINTAIN COMPETITION SITES:
+- using the Clubs List, crawl for tournament sites, and competition sites.
+- for each tournament, save all competition sites in the competition list
+
+
+Tables:
+- club_finders                          URL     FEDERAL STATE       CRAWL DATE
+- clubs                                 URL     FEDERAL STATE       CRAWL DATE
+- tournament_finders                    URL     SCOPE               CRAWL DATE      URL BASE
+- competitions                          
+
+- scores (adjudicators x competitions)
+- adjudicators
+- couples

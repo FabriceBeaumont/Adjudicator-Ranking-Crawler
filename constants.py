@@ -1,61 +1,236 @@
 from typing import List, Dict, Tuple, Set
 from enum import Enum
 from urllib.parse import urlparse
+import pandas as pd
+import os
 from abc import ABC, abstractmethod
 
-results_dir: str = "results"
+DIR_RESULTS: str        = "results"
+DIR_CRAWLED_SITES: str  = "crawled_websites"
+DIR_COMP_TABLES: str    = "comp_tables"
+DIR_CRAWLED_LINKS: str  = "crawled_links"
 
-url_main = "https://www.tanzsport.de/de/sportwelt/ergebnisse"
+class FilenameList(ABC):
+    # Filenames for tables in a single tournament.
+    GENERAL_INFO: str = "general_info.csv"
+    QUALI_ROUNDX: str = "quali_round{}.csv"
+    FINALS: str       = "finals.csv"
+    RANKING_LIST: str = "ranking.csv"
+    ADJUDICATORS: str = "adjudicators.csv"
+    # Filenames to maintain lists of urls.
+    FIND_CLUBS: str         = "find_clubs.csv"
+    CLUB_LIST: str          = "clubs.csv"
+    FIND_TOURNAMENTS: str   = "find_tournaments.csv"
+    COMPETITION_LIST: str   = "competitions.csv"
 
-urls_main = [
-    "https://www.tanzsportkreis-sankt-augustin.de/",
-    "https://ttcrotgoldkoeln.de/",
-    "https://www.tscbruehl.de/",
-    "https://askania-tsc.de/",
-    "http://www.rgc-nuernberg.de/",
-    "https://www.gsc-muenchen.de/",
-    "https://www.blau-silber-berlin.de/",
-    "https://www.ggcbremen.de/",
-    "https://www.rot-weiss-leipzig.de/",
-    "https://blau-gold-darmstadt.de/",
-    "https://www.tszdresden.de/",
-    "https://www.boston-club.de/",
-    "https://tszmittelrhein.de/",
-]
+class ScopeList(ABC):
+    LOCAL: str          = "Local"           # TSK
+    REGIONAL: str       = "Regional"        # Landesmeisterschaft
+    NATIONAL: str       = "National"        # DTV
+    INTERNATIONAL: str  = "International"   # WDSF (auch Rangliste w.g. vieler internationaler Wertungsrichter)
 
-urls_hot = [
-    "https://www.tanzsportkreis-sankt-augustin.de/veranstaltungen/turnierergebnisse/",
-    "https://ttcrotgoldkoeln.de/turniere/",
-    "https://www.tscbruehl.de/index.php/service/turnierergebnisse",
-    "https://askania-tsc.de/turnierergebnisse/",
-    "http://www.rgc-nuernberg.de/seite/422510/turnierergebnisse.html",
-    "https://www.gsc-muenchen.de/turniertanz/turnierergebnisse",
-    "https://www.blau-silber-berlin.de/",
-    "https://www.ggcbremen.de/de/ergebnisse",
-    "https://www.rot-weiss-leipzig.de/veranstaltungen/turniere.html",
-    "https://blau-gold-darmstadt.de/turniere/",
-    "https://www.tszdresden.de/wp-contentuploadsarchiv/",
-    "https://www.boston-club.de/",
-    "https://tszmittelrhein.de/",
-]
+class FederalStateList(ABC):
+    BADEN_WUERTTEMBERG: str = 'Baden-Wuerttemberg'
+    BAYERN: str             = 'Bayern'
+    BERLIN: str             = 'Berlin'
+    BRANDENBURG: str        = 'Brandenburg'
+    BREMEN: str             = 'Bremen'
+    HAMBURG: str            = 'Hamburg'
+    HESSEN: str             = 'Hessen'
+    MECKLENBURG_VORPOMMERN: str = 'Mecklenburg-Vorpommern'
+    NIEDERSACHSEN: str      = 'Niedersachsen'
+    NRW: str                = 'Nordrhein-Westfalen'
+    RHEINLAND_PFALZ: str    = 'Rheinland-Pfalz'
+    SAARLAND: str           = 'Saarland'
+    SACHSEN: str            = 'Sachsen'
+    SACHSEN_ANHALT: str     = 'Sachsen-Anhalt'
+    SCHLESWIG_HOLSTEIN: str = 'Schleswig-Holstein'
+    THUERINGEN: str         = 'Thüringen'
 
-class filenames(Enum):
-    general_info = "general_info.csv"
-    quali_roundx = "quali_round{}.csv"
-    finals       = "finals.csv"
-    ranking_lst  = "ranking.csv"
-    adjudicators = "adjudicators.csv"
 
-class C_all(ABC):
-    # Local keywords
-    COMP_NAME: str      = 'Competition name'
-    COMP_LINK: str      = 'Competition link' 
-    TOUR_NAME: str      = 'Tournament name'
-    TOUR_LINK: str      = 'Tournament link'
+class ClubsDf(ABC):
+    """ This class defines the DataFrame to hold urls to clubs in Germany.
+        The class is able to load, save and append to the DataFrame.
+    """
+    _instance = None
+    # Define the columns of the DataFrame.
+    cURL: str            = 'Url'
+    cFEDERAL_STATE: str  = 'Federal state'
+    cCRAWL_DATE: str     = 'Crawl date'
+
+    COLUMNS: str            = [cURL, cFEDERAL_STATE, cCRAWL_DATE]
+    PATH: str               = f"{DIR_RESULTS}/{FilenameList.CLUB_LIST}"
+    CLUB_HINTS_PATH: str    = f"{DIR_RESULTS}/{FilenameList.FIND_CLUBS}"
+
+    BAD_LINK_PREFIXES: List[str] = ['mailto', 'tel', '#', '?s']
+    BAD_LINK_POSTFIXES: List[str] = ['.jpy', '.png']
+
+    # There is only one such table, thus this class follows the Singleton pattern.
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(FindTournamentsDf, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not hasattr(self, '_initialized'):
+            self._initialized = True
+
+        # To read the already existant data use the DataFrame.
+        self.df= self._load_df()
+        # For edit operations (adding new urls), use the dictionary version.
+        # Do not forger to save the edits by calling the 'save_df' method.
+        self.df_dict = self.df.to_dict(orient='records')
+
+    def _load_df(self) -> pd.DataFrame:
+        if not os.path.exists(self.PATH): 
+            return pd.DataFrame(columns=self.COLUMNS)
+        return pd.read_csv(self.PATH)
+    
+    def url_is_known(self, url: str) -> bool:
+        return url in [d[self.cURL] for d in self.df_dict]
+
+    def get_clubs_from_federal_state(self, state: FederalStateList) -> List[str]:
+        return self.df[self.df[self.cFEDERAL_STATE] == state.value][self.cURL].tolist()
+
+    def get_club_hint_df(self) -> pd.DataFrame:
+        if not os.path.exists(self.CLUB_HINTS_PATH): return pd.DataFrame(columns=[self.cURL, self.cFEDERAL_STATE, self.cCRAWL_DATE])
+        return pd.read_csv(self.CLUB_HINTS_PATH)
+    
+    def add_url(self, url: str, federal_state: str, crawl_date: str) -> None:
+        # If the 'url' is already presend in the dictoinary, do not add it.
+        if self.url_is_known(url): return None
+        
+        self.df_dict.append(dict(self.COLUMNS, [url, federal_state, crawl_date]))
+        return None
+
+    def save_df(self) -> None:
+        # Create the new DataFrame only now, after adding rows, 
+        # since dynamically adding rows to a DataFrame leads pandas to expensively allocate memory on the fly.
+        self.df = pd.DataFrame(self.df_dict)
+        self.df.to_csv(self.PATH, index=False)
+
+class FindTournamentsDf(ABC):
+    """ This class defines the DataFrame to hold urls to websites where tournament sites are stored.
+        The class is able to load, save and append to the table.
+    """
+    _instance = None
+    # Define the columns of the DataFrame.
+    cURL: str            = 'Url'
+    cSCOPE: str          = 'Scope'
+    cFEDERAL_STATE: str  = 'Federal state'
+    cCRAWL_DATE: str     = 'Crawl date'
+    cORIGIN: str         = 'Origin'
+
+    COLUMNS: str            = [cURL, cSCOPE, cFEDERAL_STATE, cCRAWL_DATE, cORIGIN]
+    PATH: str               = f"{DIR_RESULTS}/{FilenameList.FIND_TOURNAMENTS}"
+    CLUB_HINTS_PATH: str    = f"{DIR_RESULTS}/{FilenameList.FIND_CLUBS}"
+
+    # To identify that a site contains competition results.
+    KEY_CONTENT: str     = '<meta name="GENERATOR" content="TopTurnier">'
+    BAD_LINK_PREFIXES: List[str] = ['mailto', 'tel', '#', '?s']
+    BAD_LINK_POSTFIXES: List[str] = ['.jpy', '.png']
+
+    # There is only one such table, thus this class follows the Singleton pattern.
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(FindTournamentsDf, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not hasattr(self, '_initialized'):
+            self._initialized = True
+
+        # To read the already existant data use the DataFrame.
+        self.df= self._load_df()
+        # For edit operations (adding new urls), use the dictionary version.
+        # Do not forger to save the edits by calling the 'save_df' method.
+        self.df_dict = self.df.to_dict(orient='records')
+
+    def _load_df(self) -> pd.DataFrame:
+        if not os.path.exists(self.PATH): 
+            return pd.DataFrame(columns=self.COLUMNS)
+        return pd.read_csv(self.PATH)
+
+    def url_is_known(self, url: str) -> bool:
+        return url in [d[self.cURL] for d in self.df_dict]
+
+    def get_local_urls_list(self) -> List[str]:
+        return self.df[self.df[self.cSCOPE] == ScopeList.LOCAL][self.cURL].tolist()
+    
+    def get_regional_urls_list(self) -> List[str]:
+        return self.df[self.df[self.cSCOPE] == ScopeList.REGIONAL][self.cURL].tolist()
+
+    def get_national_urls_list(self) -> List[str]:
+        return self.df[self.df[self.cSCOPE] == ScopeList.NATIONAL][self.cURL].tolist()
+
+    def get_club_hint_df(self) -> pd.DataFrame:
+        if not os.path.exists(self.CLUB_HINTS_PATH): return pd.DataFrame(columns=[self.cURL, self.cFEDERAL_STATE, self.cCRAWL_DATE])
+        return pd.read_csv(self.CLUB_HINTS_PATH)
+    
+    def add_url(self, url: str, scope: str, federal_state: str, crawl_date: str, origin: str) -> None:
+        # If the 'url' is already presend in the dictoinary, do not add it.
+        if self.url_is_known(url): return None
+        
+        self.df_dict.append(dict(self.COLUMNS, [url, scope, federal_state, crawl_date, origin]))
+        return None
+
+    def save_df(self) -> None:
+        # Create the new DataFrame only now, after adding rows, 
+        # since dynamically adding rows to a DataFrame leads pandas to expensively allocate memory on the fly.
+        self.df = pd.DataFrame(self.df_dict)
+        self.df.to_csv(self.PATH, index=False)
+
+class CompetitionsDf(ABC):
+    """ This class defines the DataFrame to hold competition links.
+        It is able to load, save and create to the table.
+    """
+    _instance = None
+    # Define the columns of the DataFrame.
+    cURL: str            = 'Url'
+    cORIGIN: str         = 'Origin'
+    cCRAWL_DATE: str     = 'Crawl date'
+    cCOMPETITION_ID: str = 'Competition ID'
+    cTOURNAMENT_ID: str  = 'Tournament ID'
+    cWDSF: str           = 'is WDSF'
+    cPROCESSED: str      = 'Processed'
+
+    COLUMNS: str    = [cTOURNAMENT_ID, cCOMPETITION_ID, cURL, cORIGIN, cCRAWL_DATE, cPROCESSED]
+    PATH: str       = f"{DIR_RESULTS}/{FilenameList.COMPETITION_LIST}"
+
+    # To identify that a site points to competition sites.
+    KEY_URL_ANCHOR: str  = '/index.htm'
+    BAD_LINK_PREFIXES: List[str] = ['mailto', 'tel', '#', '?s']
+    BAD_LINK_POSTFIXES: List[str] = ['.jpy', '.png']
+
+    # There is only one such table, thus this class follows the Singleton pattern.
+    def __new__(cls):
+            if cls._instance is None:
+                cls._instance = super(CompetitionsDf, cls).__new__(cls)
+            return cls._instance
+
+    def __init__(self):
+        if not hasattr(self, '_initialized'):
+            self._initialized = True
+
+            self.df = self._init_df()
+
+    def _init_df(self) -> pd.DataFrame:
+        if not os.path.exists(self.PATH):
+            return pd.DataFrame(columns=self.COLUMNS)
+        return pd.read_csv(self.PATH)
+
+class C_international(ABC):
+    # Local keywords.
+    COMPETITION_NAME: str      = 'Competition name'
+    COMPETITION_LINK: str      = 'Competition link' 
+    TOURNAMENT_NAME: str       = 'Tournament name'
+    TOURNAMENT_LINK: str       = 'Tournament link'
+    URL: str            = 'URL'
     BASE_URL: str       = 'Base url'
     DATE: str           = 'Crawl date'
     ID: str             = 'Tournament id'
     PROCESSED: str      = 'Processed'
+    COMP_SCOPE: str     = 'Scope'
     SURNAME: str        = 'Surname'
     NAME: str           = 'Name'
     LEADER: str         = 'Leader'
@@ -78,9 +253,6 @@ class C_all(ABC):
     NR_ROUNDS: str      = 'Nr. Rounds + Final'   
     NR_ADJDCTRS: str    = 'Nr. Adjudicators'
     NR_COUPLES: str     = 'Nr. Couples'
-
-    KEY_CONTENT: List[str]      = ["TopTurnier"]
-    KEY_URL_ANCHOR: List[str]   = ['/index.htm']
     
     KEY_ORGANZIER: str          = 'Organizer:'
     KEY_MASTER_OF_CEREMONY: str = 'Master of Ceremony:' 
@@ -91,6 +263,7 @@ class C_all(ABC):
     KEY_FINAL: str              = 'Final'
     KEY_ROUND: str              = 'round'
     KEY_ADJUDICATOR: str        = 'Adjudicator'
+    KEY_COUPLE: str             = 'Couple'
 
     LW_l = "Waltz"    
     LW_s = "SW"
@@ -137,48 +310,49 @@ class C_all(ABC):
         if dance_name == self.PD_l: return self.PD_s
         if dance_name == self.JV_l: return self.JV_s
 
-class C_en(C_all):
+class C_en(C_international):
     def __init__(self):
         super().__init__()
 
-class C_de(C_all):    
+class C_de(C_international):    
     # Define the dance names in german.
     LW_l = "Langsamer Walzer"
     LW_s = "LW"
     WW_l = "Wiener Walzer"
     WW_s = "WW"
 
-    KEY_ORGANZIER = 'Veranstalter:'    
+    KEY_ORGANZIER   = 'Veranstalter:'    
     KEY_MASTER_OF_CEREMONY = 'Ausrichter:'
-    COUPLE = 'Paar'
-    PLACEMENT = 'Platz'
-    ROUND = 'Runde'
-    NR = 'Nr.'
-    KEY_FINAL = 'Endrunde'
-    KEY_ROUND = 'runde'
+    COUPLE          = 'Paar'
+    PLACEMENT       = 'Platz'
+    ROUND           = 'Runde'
+    NR              = 'Nr.'
+    KEY_FINAL       = 'Endrunde'
+    KEY_ROUND       = 'runde'
     KEY_ADJUDICATOR = 'Wertungsrichter'
+    KEY_COUPLE      = 'Paar/Club'
 
     def __init__(self):
         super().__init__()
 
 
-get_constants_in_language = {
-    'de': C_de(),
-    'en': C_en()
-}
+def get_constants_in_language(language: str) -> C_international:
+    if language == 'de':
+        return C_de()
+    else:
+        return C_en()
 
-def parse_dance_name(dance_name: str, const_class) -> str:
-    if dance_name == const_class.LW_l: return const_class.LW_s
-    if dance_name == const_class.TG_l: return const_class.TG_s
-    if dance_name == const_class.WW_l: return const_class.WW_s
-    if dance_name == const_class.SF_l: return const_class.SF_s
-    if dance_name == const_class.QS_l: return const_class.QS_s
-    if dance_name == const_class.SB_l: return const_class.SB_s
-    if dance_name == const_class.CC_l: return const_class.CC_s
-    if dance_name == const_class.RB_l: return const_class.RB_s
-    if dance_name == const_class.PD_l: return const_class.PD_s
-    if dance_name == const_class.JV_l: return const_class.JV_s
-
+# def parse_dance_name(dance_name: str, const_class) -> str:
+#     if dance_name == const_class.LW_l: return const_class.LW_s
+#     if dance_name == const_class.TG_l: return const_class.TG_s
+#     if dance_name == const_class.WW_l: return const_class.WW_s
+#     if dance_name == const_class.SF_l: return const_class.SF_s
+#     if dance_name == const_class.QS_l: return const_class.QS_s
+#     if dance_name == const_class.SB_l: return const_class.SB_s
+#     if dance_name == const_class.CC_l: return const_class.CC_s
+#     if dance_name == const_class.RB_l: return const_class.RB_s
+#     if dance_name == const_class.PD_l: return const_class.PD_s
+#     if dance_name == const_class.JV_l: return const_class.JV_s
 
 def get_site_name_from_url(url: str) -> str:
     """Strips a given url to the name of the main domain and return it."""
@@ -211,29 +385,23 @@ def largest_common_prefix_path(l: List[str]) -> str:
 
     return "".join(anchors[:anchor_limit-1])
 
-def get_results_dir_name() -> str:
-    return results_dir
+# def get_tournament_links_df() -> pd.DataFrame:
+#     return pd.read_csv(get_competition_links_csv_path())
 
-def get_url_list_path(url: str) -> str:
-    return f"{results_dir}/{get_site_name_from_url(url)}"
+# def get_competition_links_csv_path() -> str:
+#     return f"{results_dir}/competition_links.csv"
 
-def get_tournament_links_csv_path() -> str:
-    return f"{results_dir}/tournament_links.csv"
+# def get_adjudicator_links_csv_path() -> str:
+#     return f"{results_dir}/adjudicator_links.csv"
 
-def get_competition_links_csv_path() -> str:
-    return f"{results_dir}/competition_links.csv"
+# def get_athletes_links_csv_path() -> str:
+#     return f"{results_dir}/athletes_links.csv"
 
-def get_adjudicator_links_csv_path() -> str:
-    return f"{results_dir}/adjudicator_links.csv"
+# def get_all_url_list_path(url: str) -> str:
+#     return f"{get_url_list_path(url)}/all_urls.npy"
 
-def get_athletes_links_csv_path() -> str:
-    return f"{results_dir}/athletes_links.csv"
+# def get_positive_url_path(url: str) -> str:
+#     return f"{get_url_list_path(url)}/known_hits.npy"
 
-def get_all_url_list_path(url: str) -> str:
-    return f"{get_url_list_path(url)}/all_urls.npy"
-
-def get_positive_url_path(url: str) -> str:
-    return f"{get_url_list_path(url)}/known_hits.npy"
-
-def get_negative_urls_path(url: str) -> str:
-    return f"{get_url_list_path(url)}/negatives.npy"
+# def get_negative_urls_path(url: str) -> str:
+#     return f"{get_url_list_path(url)}/negatives.npy"
