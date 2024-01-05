@@ -1,23 +1,28 @@
-
-    BASE (do not change automatically):
+BASE (do not change automatically):
     - list of federal states collection of clus (club_finders)
 
+CLUBS TODO BY HAND:
+- Badenn-Würtemberg
+https://www.tbw.de/home/verband/vereine?tx_piidata_vereinssuche%5Baction%5D=search&tx_piidata_vereinssuche%5Bcontroller%5D=Verein&cHash=3d7c9572d9bcfa7b932c237a6f44fafc
 
-MAINTAIN CLUBS:
-- using the BASE, crawl for club websites that are not already stored in the clubs list (clubs).
-- using the clubs list, crawl for clubs sites, that seem to point to multiple tournament sites
 
-MAINTAIN COMPETITION SITES:
-- using the Clubs List, crawl for tournament sites, and competition sites.
-- for each tournament, save all competition sites in the competition list
+
+
 
 
 Tables:
-- club_finders                          URL     FEDERAL STATE       CRAWL DATE
-- clubs                                 URL     FEDERAL STATE       CRAWL DATE
-- tournament_finders                    URL     SCOPE               CRAWL DATE      URL BASE
-- competitions                          
+DONE    - maintain clubs
+DEV     - maintain tournaments
+        - maintain competitions (with comp index) - class_age, class_level
+        - maintain adjudicators (with adj index) - and sanity check for duplicates
+        - maintain grab and possibly save data
+        - maintain scores_mse_to_majority   (adj id x comp id)
+        - maintain scores_mse_to_mean       (adj id x comp id)
+        - maintain couples      (with couples id) - and sanity check for duplicates
 
-- scores (adjudicators x competitions)
-- adjudicators
-- couples
+        - add functionalities:
+            - list competitions, crawl date for club
+            - list competitions, crawl date for federal state
+            - find adjudiactor (with name fragments)
+            - find couple (with name fragments)
+            - list comps of adjudicator
