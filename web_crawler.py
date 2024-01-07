@@ -19,7 +19,7 @@ import time
 from collections import deque
 
 # Local imports.
-import constants as c
+import dataframes as c
 
 def webpage_is_html(source_code: str) -> bool:
     # Note that this only contains the lower case variation! For both 'doctype' and 'htm' ('html') there
@@ -59,7 +59,8 @@ def crawl_href_links_on_webpage(
         url_shall_contain_some: List[str] = [],
         url_must_not_contain_any: List[str] = [],
         forbidden_url_prefixes: List[str] = [], 
-        forbidden_url_postfixes: List[str] = [], 
+        forbidden_url_postfixes: List[str] = [],
+        forbidden_anchors: List[str] = [], 
         reconnection_trys: int = 3,
         search_recursively: bool = False,
         recursion_depth: int = 3,
@@ -143,8 +144,8 @@ def crawl_href_links_on_webpage(
 
             # Iterate through all anchors on this website. Determine in a second step if they are hyperreferences.
             local_anchors = soup.find_all("a")
-            local_links = list(set([a.attrs['href'] for a in local_anchors if "href" in a.attrs and not a.attrs['href'].startswith(tuple(forbidden_url_prefixes))]))          
-
+            local_links = list(set([a.attrs['href'] for a in local_anchors if "href" in a.attrs]))
+            
             local_links.sort()
             local_link_depth: int = depth + 1
             n: int = len(local_links)
@@ -154,6 +155,9 @@ def crawl_href_links_on_webpage(
                 local_link = local_links[i]
                 progress_bar.update()
                 progress_bar.set_postfix_str(c.get_site_name_from_url(local_link))
+                # First filtering of the links.
+                if local_link.startswith(tuple(forbidden_url_prefixes)) or local_link in forbidden_anchors:
+                    continue
                 # If the href is a local anchor, add the global link structure.                
                 if not local_link.startswith(('http', 'www')): 
                     if not local_link.startswith('/'):

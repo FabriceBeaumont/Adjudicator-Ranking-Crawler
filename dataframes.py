@@ -2,10 +2,9 @@ from typing import List, Dict, Tuple, Set
 from urllib.parse import urlparse
 import pandas as pd
 import os
-from abc import ABC
 from datetime import date
 
-import constants as c
+import dataframes as c
 import web_crawler as wc
 import competition_reader as comp_reader
 
@@ -88,7 +87,7 @@ class ClubsTable():
         self.df= self._load_df()
         self.df_changed: bool = False
         # For edit operations (adding new urls), use the dictionary version.
-        # Do not forger to save the edits by calling the 'save_df' method.
+        # Do not forget to save the edits by calling the 'save_df' method.
         self.df_dict_list: List[Dict[str, str]] = self.df.to_dict(orient='records')
         self.df_dict_changed: bool = False
 
@@ -268,18 +267,22 @@ class CompetitionsTable():
     cCOMP_LEVEL: str              = 'Comp. Level'
     cCOMP_DISCIPLINE: str         = 'Comp. Discipline'    
     cWDSF: str                    = 'is WDSF'
+    cCANCELLED: str               = 'Got cancelled'
 
     cPROCESSED: str               = 'Processed'
     cCOMMENT: str                 = 'Comment'
 
     COLUMNS: str            = [cURL, cSCOPE, cFEDERAL_STATE, cORIGIN, cCLUB, cTOURNAMENT_ID, cCRAWL_DATE,
                                cCOMP_DATE, cCOMP_NAME, cCOMP_ORGANISER, cCOMP_CLASS, cCOMP_AGE_GROUP, cCOMP_LEVEL, cCOMP_DISCIPLINE, 
-                               cWDSF, cPROCESSED, cCOMMENT]
+                               cWDSF, cPROCESSED, cCANCELLED, cCOMMENT]
     PATH: str               = f"{DIR_DATA}/{FilenameList.CSV_TOURNAMENTS}"
     CLUB_HINTS_PATH: str    = f"{DIR_DATA}/{FilenameList.CSV_FIND_CLUBS}"
 
     # To identify that a site is a competition site, look for this url-ending.
-    KEY_COMP_URL_END: str         = '/index.htm'
+    KEY_COMP_URL_ENDS: List[str]    = ['/index.htm']
+    # Notice that there may be empty competition links, since all competitions are displayed in an array of two columns.
+    # Filter these invalid links.
+    KEY_FORBIDDEN_ANCHORS: List[str] = ['index.htm']
     # To identify that a site contains links to tournaments.
     KEY_URL_PARTS: List[str]    = ['urnier', 'rgebnisse', 'ompetition', 'esults']
     # To identify that a site contains competition results.
@@ -305,7 +308,7 @@ class CompetitionsTable():
         self.df_changed: bool = False
         self._update_tournament_id_ctr()
         # For edit operations (adding new urls), use the dictionary version.
-        # Do not forger to save the edits by calling the 'save_df' method.
+        # Do not forget to save the edits by calling the 'save_df' method.
         self.df_dict_list = self.df.to_dict(orient='records')
         self.df_dict_changed: bool = False
 
@@ -352,12 +355,12 @@ class CompetitionsTable():
     
     def add_url_to_dict(self, url: str, scope: str, federal_state: str, origin: str, club: str, crawl_date: str, 
                         comp_date: str, comp_name: str, comp_organizer: str, comp_class: str, comp_age_group: str, comp_level: str,
-                        comp_discipline: str, is_english: bool) -> bool:
+                        comp_discipline: str, is_english: bool, cancelled: bool) -> bool:
         # If the 'url' is already presend in the dictoinary, do not add it.
         if self.url_is_known_in_df_dict_list(url): return False
 
         self.df_dict_list.append(dict(zip(self.COLUMNS, [url, scope, federal_state, origin, club, self.get_tournament_id(), crawl_date,
-                                                         comp_date, comp_name, comp_organizer, comp_class, comp_age_group, comp_level, comp_discipline, is_english, False, ''])))
+                                                         comp_date, comp_name, comp_organizer, comp_class, comp_age_group, comp_level, comp_discipline, is_english, False, cancelled, ''])))
         
         self.df_dict_changed = True
         return True
@@ -408,7 +411,7 @@ class CompetitionsTable():
             # at the same date. If such a competition is already listed, append the new url to remarks and continue.
             # Notice that this test is based on the DataFrame, while we first add the list of urls to the dictionary list.
             # We assert that in this list no two competitions are listed twice.
-            comp_is_known, comp_ids = self.comp_is_known_in_df(cr.comp_organiser, cr.comp_age_group, cr.comp_date, cr.comp_level, cr.comp_discipline)
+            comp_is_known, comp_ids = self.comp_is_known_in_df(cr.comp_organiser, cr.comp_age_group, cr.comp_class)
 
             if comp_is_known:
                 # In this case a competition has been found with two different urls. Add the url to the origins value.
@@ -423,7 +426,7 @@ class CompetitionsTable():
             self.add_url_to_dict(url=url, scope=scope, federal_state=federal_state, origin=origin, club=club, crawl_date=crawl_date,
                                  comp_date=cr.comp_date, comp_name=cr.comp_name, comp_organizer=cr.comp_organiser,
                                  comp_class=cr.comp_class, comp_age_group=cr.comp_age_group, comp_level=cr.comp_level,
-                                 comp_discipline=cr.comp_discipline, is_english=cr.is_english)
+                                 comp_discipline=cr.comp_discipline, is_english=cr.language_name, cancelled=cr.comp_was_cancelled)
 
             new_comp_ctr += 1
         
@@ -448,11 +451,11 @@ class CompetitionsTable():
         crawl_date: str = date.today().strftime(c.TIME_STR_FORMAT)        
         candidate_sites: List[str] = []
         # Initialize counters.
-        comp_ctr: int     = 0
-        new_comp_ctr: int = 0
+        comp_ctr: int      = 0
+        new_comp_ctr: int  = 0
         tour_ctr: int      = 0
         new_tour_ctr: int  = 0
-        club_ctr: int            = 0
+        club_ctr: int      = 0
 
         # Filter the clubs.
         # If any rows from the clubs table are specified, filter for them first.
@@ -468,8 +471,8 @@ class CompetitionsTable():
             # Counters for this club.
             club_comp_ctr: int     = 0
             new_club_comp_ctr: int = 0
-            club_tour_ctr: int      = 0
-            new_club_tour_ctr: int  = 0
+            club_tour_ctr: int     = 0
+            new_club_tour_ctr: int = 0
 
             print_percentage: str = f"{club_ctr}\{num_clubs}, {club_ctr/num_clubs*100:.2f}%"
             print(f"[{print_percentage}] Searching for results sites on club webpage: '{get_site_name_from_url(club_url)}'")
@@ -508,8 +511,8 @@ class CompetitionsTable():
 
                 # If the tournament site is actually already a competition site, assume that no tompetition site exists.
                 found_comp: bool = False
-                for url in tmp_tournament_sites:
-                    if url.endswith(c.CompetitionsTable.KEY_COMP_URL_END):
+                for url in tmp_tournament_sites:                    
+                    if url.endswith(tuple(c.CompetitionsTable.KEY_COMP_URL_ENDS)):
                         is_new_ctr = self.add_competitions_to_dict([url],
                                                                    scope=c.ScopeList.LOCAL, 
                                                                    federal_state=federal_state,
@@ -527,11 +530,12 @@ class CompetitionsTable():
                         competition_sites: List[str] = []
                         competition_sites, _ = wc.crawl_href_links_on_webpage(
                             url=url,
-                            url_shall_contain_all=[c.CompetitionsTable.KEY_COMP_URL_END],
+                            url_shall_contain_all=c.CompetitionsTable.KEY_COMP_URL_ENDS,
                             website_contains_content_some=c.CompetitionsTable.KEY_CONTENTS,                    
                             url_must_not_contain_any=c.CompetitionsTable.BAD_URL_SAMPLE + rejected_club_sites,
                             forbidden_url_prefixes=c.CompetitionsTable.BAD_LINK_PREFIXES,
                             forbidden_url_postfixes=c.CompetitionsTable.BAD_LINK_POSTFIXES,
+                            forbidden_anchors=c.CompetitionsTable.KEY_FORBIDDEN_ANCHORS,
                             verbose=verbose
                         )
                         if len(competition_sites) == 0: continue
@@ -616,7 +620,7 @@ class CompetitionsDf():
         self.df_changed: bool = False
         self._update_competition_id_ctr()
         # For edit operations (adding new urls), use the dictionary version.
-        # Do not forger to save the edits by calling the 'save_df' method.
+        # Do not forget to save the edits by calling the 'save_df' method.
         self.df_dict_list = self.df.to_dict(orient='records')
         self.df_dict_changed: bool = False
 
@@ -627,7 +631,7 @@ class CompetitionsDf():
 
     def _update_competition_id_ctr(self) -> None:
         max_id = 0
-        if not self.df.empyt:
+        if not self.df.empty:
             # Try to get the maximum value in the cTOURNAMENT_ID column            
             max_id = self.df[self.cCOMPETITION_ID].max()        
         
@@ -723,7 +727,88 @@ class CompetitionsDf():
 
         # TODO: if tournament site is competition site, clone origin and add competition site to df
 
+class AdjudicatorDf():
+    _instance = None
+    # Define the columns of the DataFrame.
+    cFULL_NAME_AND_CLUB: str = 'Full name and club'
+    cNAME: str               = 'Name'
+    cSURNAME: str            = 'Surname'
+    cCLUB: str               = 'Club'
+    cID: str                 = 'Id'
+    
+    COLUMNS: str = [cFULL_NAME_AND_CLUB, cNAME, cSURNAME, cCLUB, cID]
+    PATH: str    = f"{DIR_DATA}/{FilenameList.CSV_ADJUDICATORS}"
+    
+    # There is only one such table, thus this class follows the Singleton pattern.
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(AdjudicatorDf, cls).__new__(cls)
+        return cls._instance
 
+    def __init__(self):
+        if not hasattr(self, '_initialized'):
+            self._initialized = True
+
+        self._competition_id_ctr: int = None
+
+        # To read the already existant data use the DataFrame.
+        self.df = self._load_df()
+        self._update_adjudicator_id_ctr()
+
+    def _load_df(self) -> pd.DataFrame:
+        if not os.path.exists(self.PATH) or os.path.getsize(self.PATH) < 2: 
+            return pd.DataFrame(columns=self.COLUMNS)
+        return pd.read_csv(self.PATH)
+
+    def _update_adjudicator_id_ctr(self) -> None:
+        max_id = 0
+        if not self.df.empty:
+            # Try to get the maximum value in the cTOURNAMENT_ID column            
+            max_id = self.df[self.cID].max()        
+        
+        self._competition_id_ctr = max_id + 1
+
+    def get_adjudicator_id(self) -> int:
+        self._competition_id_ctr += 1
+        return self._competition_id_ctr - 1
+
+    def save_df(self) -> None:        
+        print(f"Saving clubs dataframe to file: '{self.PATH}'")
+        self.df.to_csv(self.PATH, index=False)
+
+    def is_known(self, full_name_and_club: str) -> Tuple[bool, List[int]]:
+        is_known = (self.df[self.cFULL_NAME_AND_CLUB] == full_name_and_club)        
+        # Check if all conditions are satisfied in any row
+        comp_ids = [i for i, is_hit in enumerate(is_known) if is_hit]
+        return is_known.any(), comp_ids
+            
+    def add_urls_to_dict(self, full_names_and_clubs: List[str], names: List[str], surnames: List[str], clubs: List[str]) -> int:
+        equal_lenghts = [len(names) == len(x) for x in [surnames, clubs]]
+        if not all(equal_lenghts):
+            print("Got lists with different lenghts! Noting was added.")
+            return 0
+        
+        new_urls_ctr: int = 0
+        new_entries: List[Dict[str, str]] = []
+        for i, full_name_and_club in enumerate(full_names_and_clubs):
+            if self.is_known(full_name_and_club): 
+                continue
+            else:
+                # Add the new adjudicator.
+                new_entries.append({
+                    self.cFULL_NAME_AND_CLUB: full_name_and_club, 
+                    self.cNAME: names[i], 
+                    self.cSURNAME: surnames[i], 
+                    self.cCLUB: clubs[i],
+                    self.cID: self.get_adjudicator_id()
+                })
+                new_urls_ctr += 1
+
+        # Update the dictionary and save the changes.
+        self.df = pd.concat([self.df, pd.DataFrame(new_entries)], axis=0, ignore_index=True)
+        self.save_df()
+        return new_urls_ctr
+    
 def get_site_name_from_url(url: str) -> str:
     """Strips a given url to the name of the main domain and return it."""
     return urlparse(url).netloc
