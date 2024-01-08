@@ -5,6 +5,7 @@ from dateutil import parser
 import time
 import pandas as pd
 from enum import Enum
+from pathlib import Path
 import re
 
 from selenium import webdriver
@@ -17,6 +18,7 @@ CHROME_WEBDRIVER_PATH = "/usr/lib/chromium-browser/chromedriver"
 # Local files.
 import languages as l
 import dataframes
+import filenames as f
 
 # List of possible data tables for competitions:
 class DfNames(Enum):
@@ -30,8 +32,32 @@ class DfNames(Enum):
 class CompetitionReader():
     URL_ENDING = '/index.htm'
 
-    def __init__(self, url: str):
+    # Definitions of column names.
+    cCATEGORY: str  = 'Category'
+    cVALUE: str     = 'Value'
+    cDATE: str      = 'Date'
+    cTITLE: str     = 'Title'
+    cCLASS: str     = 'Class'
+    cPLACEMENT: str = 'Placement'
+    cCOUPLE: str    = 'Couple'
+    cCLUB: str      = 'Club'
+    cNR: str        = 'Nr.'
+    cROUND: str     = 'Round'
+    cLEADER: str    = 'Leader'
+    cFOLLOWER: str  = 'Follower'
+    cDANCE: str     = 'Dance'
+    cSUM: str       = 'Sum'
+    cQUALI: str     = 'Qualified'
+
+    # Define some row keywords used in the general information table.
+    rNR_ROUNDS: str   = 'Nr. Rounds'
+    rNR_ADJDCTRS: str = 'Nr. Adjudicators'
+    rNR_COUPLES: str  = 'Nr. Couples'
+
+
+    def __init__(self, url: str, save_to_file: bool = False):
         self.url = url
+        self.save_to_file: bool = save_to_file
         if not url.endswith(self.URL_ENDING):
             print(f"!!! URL {url} is NOT a competition-url!")
             return None
@@ -47,13 +73,17 @@ class CompetitionReader():
         self.comp_organiser: str  = None
         self.language_name: str        = l.LanguageNames.english
         self.comp_was_cancelled: bool      = True
+        # The number of rounds refers to all rounds which are NOT the final.
+        self.nr_adjudicators: int = None
+        self.nr_rounds: int       = None
+        self.nr_couples: int      = None
 
         # Target DataFrames parsed and edited from the original competition webpage.
         self.df_general_info: pd.DataFrame   = None
         self.df_adjudicators: pd.DataFrame   = None
         self.df_ranking_list: pd.DataFrame   = None
         self.df_finals: pd.DataFrame         = None
-        self.df_qualifications: pd.DataFrame = None        
+        self.df_qualifications: List[pd.DataFrame] = []
         
         # Initial list of raw DataFrames, to read from a competition url.
         self._raw_data_dfs: List[pd.DataFrame] = []
@@ -145,21 +175,22 @@ class CompetitionReader():
         try:
             df_general_info = self._raw_data_dfs[self._data_df_indices_dict[DfNames.general_info][0]].copy()
             # Rename the columns to more meaningful names.
-            df_general_info.columns = [self.c.CATEGORY, self.c.VALUE]
+            df_general_info.columns = [self.cCATEGORY, self.cVALUE]
             # Remove colon in the category column if present.
-            df_general_info[self.c.CATEGORY] = df_general_info[self.c.CATEGORY].str.replace(':', '')
+            df_general_info[self.cCATEGORY] = df_general_info[self.cCATEGORY].str.replace(':', '')
             # Split the gereral information table into the tournament information and the adjudicator list.
-            split_id = df_general_info[df_general_info[self.c.CATEGORY] == self.c.KEY_ADJUDICATOR].index[0]
-            df_general_info.set_index(self.c.CATEGORY)
+            split_id = df_general_info[df_general_info[self.cCATEGORY] == self.c.KEY_ADJUDICATOR].index[0]
+            df_general_info.set_index(self.cCATEGORY)
             # The second part is actually the adjudicators table.
-            df_adjudicators = pd.DataFrame(df_general_info.iloc[split_id+1:, :])            
+            df_adjudicators = pd.DataFrame(df_general_info.iloc[split_id+1:, :])
+            self.nr_adjudicators = len(df_adjudicators)
             # The first part is truly the general information table.
             df_general_info = pd.DataFrame(df_general_info.iloc[:split_id, :])
             
             # Continue with the general inforamtion by extracting the organizer.
-            organiser_series = df_general_info.loc[df_general_info[self.c.CATEGORY] == self.c.KEY_ORGANZIER, self.c.VALUE]
+            organiser_series = df_general_info.loc[df_general_info[self.cCATEGORY] == self.c.KEY_ORGANZIER, self.c.VALUE]
             # If this information is not given, use the master of ceremony instead.
-            moc_series = df_general_info.loc[df_general_info[self.c.CATEGORY] == self.c.KEY_MASTER_OF_CEREMONY, self.c.VALUE]
+            moc_series = df_general_info.loc[df_general_info[self.cCATEGORY] == self.c.KEY_MASTER_OF_CEREMONY, self.c.VALUE]
             # If the extracted information is a 'Nan' value, it is interpreted as type float.
             if not organiser_series.empty and isinstance(organiser_series.iloc[0], str):
                 self.comp_organiser = organiser_series.iloc[0]
@@ -173,11 +204,12 @@ class CompetitionReader():
             
             # Add more data to the general info.
             additional_info_rows: Dict[str, str] = {
-                self.c.CATEGORY: ['Date', 'Title', 'Class'],
-                self.c.VALUE:    [self.comp_date, self.comp_title, self.comp_class]
+                self.cCATEGORY: [self.cDATE, self.cTITLE, self.cCLASS],
+                self.cVALUE:    [self.comp_date, self.comp_title, self.comp_class]
             }            
             # Save the DataFrame.
             self.df_general_info = pd.concat([df_general_info, pd.DataFrame(additional_info_rows)], axis=0, ignore_index=True)
+            if self.save_to_file: self.df_general_info.to_csv(Path(f.DIR_DATA, f.FN.CSV_GENERAL_INFO))
             
             # Process the dict of adjudicators.
             # TODO: When parsing continues, use the other tables information to separate adjudicator from club, and then store them in the global dataframe.
@@ -214,13 +246,220 @@ class CompetitionReader():
             
             # Save the DataFrame.
             self.df_adjudicators = pd.DataFrame(df_adjudicators)
+            if self.save_to_file: self.df_adjudicators.to_csv(Path(f.DIR_DATA, f.FN.CSV_ADJUDICATORS))
 
         except Exception as e:
-            print(f"Error when reading the general information table:\n{e}")
+            print(f"Error when parsing the general information table:\n{e}")
             self.comp_was_cancelled = True
-            return None, None
+            return False
         
-        return None, None
+        return True
+
+    # TODO: Debug this function.
+    def _parse_ranking_list_df(self) -> bool:
+        try:
+            # There may be several tables involved when constructing the ranking list.
+            # Start with the first one as initialization and add the others one by one.
+            df_ranking_finals = self._raw_data_dfs[DfNames.ranking_list][0].copy()
+            # Drop the first row which contains only the key word 'Finals'.
+            df_ranking_finals = df_ranking_finals[1:]
+            # Set the first row as headder, and drop it form the data body.
+            df_ranking_finals.columns = df_ranking_finals.iloc[0]
+            df_ranking_finals = df_ranking_finals[1:]
+
+            # Since the placements of the finals are redundant information and will be extracted from the finals table,
+            # delete it here. In case that there were more rounds this allows to easily join the other rankings to this table.
+            df_ranking_finals.drop(columns=self.c.get_dancenames_short() + ['PZ'], inplace=True, errors='ignore')
+            # Split the club name from the couples name (and their number).
+            df_ranking_finals[[self.c.COUPLE, self.c.CLUB]] = df_ranking_finals[self.c.KEY_COUPLE].str.split(")", expand = True)
+            df_ranking_finals.drop(columns=[self.c.KEY_COUPLE], inplace=True)
+            df_ranking_finals[[self.c.COUPLE, self.c.NR]] = df_ranking_finals[self.c.COUPLE].str.split("(", expand = True)
+            df_ranking_finals[[self.c.ROUND]] = self.c.KEY_FINAL
+            df_ranking_finals = df_ranking_finals[[self.c.PLACEMENT, self.c.ROUND, self.c.NR, self.c.COUPLE, self.c.CLUB]]
+            
+
+            # Now add to this DataFrame all remainin tables one by one.
+            self.nr_rounds = 0
+            for i in range(1, len(self._raw_data_dfs[DfNames.ranking_list])):
+                df_ranking_other = self._raw_data_dfs[DfNames.ranking_list][i].copy()
+                # Drop all rows which contain only NaN values. These are originally used to separate the tables.
+                df_ranking_other.dropna(axis=0, how='all', inplace=True)
+                # Rename the columns.
+                df_ranking_other.columns = [self.cPLACEMENT, self.cCOUPLE, self.cCLUB]
+
+                # Split the club name from the couples name (and their number).
+                df_ranking_other[[self.cNR]]     = df_ranking_other[self.cCOUPLE].str.extract(r'\((\d*)\)', expand = True)
+                df_ranking_other[[self.cCOUPLE]] = df_ranking_other[self.cCOUPLE].str.extract(r'(.*)\(', expand = True)
+
+                # Collect the row indices that contain names instead of placements. These are the round names.
+                df_ranking_other.reset_index(inplace=True)
+                round_rows = df_ranking_other[df_ranking_other[self.cPLACEMENT].str.endswith(self.c.KEY_ROUND)]
+                # Add to the total number of rounds. This excludes the finals!
+                self.nr_rounds += len(round_rows)
+                round_list: List[Tuple[int, str]] = [(i, round_rows[self.cPLACEMENT][i]) for i in round_rows.index] + [(len(df_ranking_other), '')]
+
+                # Mark all following rows with the corresponding round name in a new column.
+                df_ranking_other[[self.cROUND]] = round_list[0][1]
+                for i in range(len(round_list) - 1):
+                    start_index, round_name = round_list[i]
+                    end_index = round_list[i + 1][0]
+                    df_ranking_other.iloc[start_index : end_index, df_ranking_other.columns.get_loc(self.c.ROUND)] = round_name
+
+                # Now delete the rows with the round names. 
+                # Notice that we ignore the last entry since this is an artificial one to finish the for-loop above.
+                for i, _ in round_list[:-1]:
+                    df_ranking_other.drop(i, inplace=True)
+
+                # Rearrange the column order.
+                df_ranking_other = df_ranking_other[[self.cPLACEMENT, self.cROUND, self.cNR, self.cCOUPLE, self.cCLUB]]
+                # Append the dataframe to the first one(s).
+                df_ranking_finals = pd.concat([df_ranking_finals, df_ranking_other], axis=0, ignore_index=True)
+
+            # Add two more columns for the separated names of the leader and the follower.
+            df_ranking_finals[[self.cLEADER, self.cFOLLOWER]] = df_ranking_finals[self.cCOUPLE].str.split(" / ", expand = True)
+            # Initialize the number of couples based on the ranking list.
+            self.nr_couples: int = len(df_ranking_finals)
+            # Set the couples number as row index.
+            df_ranking_finals.set_index(self.cNR, inplace=True)
+
+            # Finally the whole table is asembled. Store it.
+            self.df_ranking_list = df_ranking_finals        
+            if self.save_to_file: self.df_ranking_list.to_csv(Path(f.DIR_DATA, f.FN.CSV_RANKING_LIST))
+
+        except Exception as e:
+            print(f"Error when parsing the ranking list table:\n{e}")
+            self.comp_was_cancelled = True
+            return False
+        
+        return True
+
+    # TODO: Debug this function.
+    def _parse_finals_df(self) -> bool:
+        try:
+            df_finals = self._raw_data_dfs[DfNames.finals][0]            
+            dance_name_rows = df_finals[df_finals[0].isna()]
+            dance_name_ids = dance_name_rows.index.to_list() + [len(df_finals.index)]
+
+            # Add a column to display the dance for which the rankings are for. 
+            # This will replace the horizonal headlines indicating the dances - which will be deleted afterwards.
+            df_finals[[self.cDANCE]] = ''
+            df_finals[self.cDANCE].iloc[1] = self.cDANCE
+            for i in range(len(dance_name_ids) - 1):
+                start_index = dance_name_ids[i]
+                dance_name = self.c.parse_dance_name(dance_name_rows.loc[start_index, 1], C)
+                end_index = dance_name_ids[i+1] - 1
+                df_finals.loc[start_index:end_index, self.cDANCE] = dance_name
+
+            # Now delete the rows with the dance names. 
+            # Notice that we ignore the last entry since this is an artificial one to finish the for-loop above.
+            for i in dance_name_ids[:-1]:
+                df_finals.drop(i, inplace=True)
+
+            # Replace the couple names by only their number.
+            df_finals[[self.cNR]] = df_finals.iloc[:, 0].str.extract(r'(\d+)\D*', expand = True)
+            df_finals[self.cNR].iloc[1] = self.cNR
+            df_finals = df_finals.iloc[:, 1:]
+
+            # Replace the adjudicator names by only their reference letter.
+            for i, value in enumerate(df_finals.iloc[1, :]):
+                if value == "1.": 
+                    break
+
+                df_finals.iloc[1, i] = value[:1]
+
+            # Delete the first line which only denotes where the adjudicators and results columns are - same as the second row does.
+            df_finals = df_finals.iloc[1:]
+            # Set the now first row as header.
+            df_finals.columns = df_finals.iloc[0]
+            df_finals = df_finals[1:]
+
+            # Use the couple number as index column.
+            df_finals.set_index(self.cNR, drop=True, inplace=True)
+            df_finals.index.name = self.cNR
+
+            # Finally the whole table is asembled. Store it.
+            self.df_finals = df_finals
+            if self.save_to_file: self.df_finals.to_csv(Path(f.DIR_DATA, f.FN.CSV_FINALS))
+
+        except Exception as e:
+            print(f"Error when parsing the finals table:\n{e}")
+            self.comp_was_cancelled = True
+            return False
+        
+        return True
+    
+    # TODO: Debug this function.
+    def _parse_qualification_round_df(self) -> bool:
+        row_id_marks: int = 0
+        row_id_sums: int  = 1
+        row_id_quali: int = 2
+        row_id_round_offset: int = 3
+        try:
+            n: int = len(self._raw_data_dfs[DfNames.qualifications])
+            df_qualifications = self._raw_data_dfs[DfNames.qualifications][0]            
+            if n > 1:
+                for i in range(1, n):
+                    # Drop the first column since it is already present from the first dataframe.
+                    df_tmp = self._raw_data_dfs[DfNames.qualifications][i].iloc[:, 1:]
+                    # Append the dataframe to the rest.
+                    df_qualifications = pd.concat([df_qualifications, df_tmp], axis=1)
+
+            # Delete the first row since it does not really contain information
+            df_qualifications = df_qualifications[1:]
+            # Because of the concatenation the column indices could be messed up. Reset them to a range.
+            df_qualifications.columns = range(len(df_qualifications.columns))
+
+            # Delete all rows where all values are NaN.
+            df_qualifications.dropna(axis=1, how='all', inplace=True)
+
+            # Depending on the size of the tournament, the names of the competitors are perhaps repeated.
+            # In this case frop this row since it is redundant.
+            df_qualifications.drop(df_qualifications.loc[df_qualifications.iloc[:, 0] == self.c.COUPLE_NR].index, inplace=True)
+
+
+            # Replace the adjudicator names by only their reference letter.
+            # Replace the couple names by only their number.
+            couple_nrs = df_qualifications.iloc[0, :].str.extract(r'(\d+)\D*')
+            couple_nrs_list = couple_nrs[0].tolist()
+            couple_nrs_list[0] = self.cNR
+            df_qualifications.columns = couple_nrs_list
+            # Drop the first row since it contains only the names of the couples and is thus 
+            # equivalent to the new column names.
+            df_qualifications = df_qualifications[1:]
+
+            # After parsing all qualification rounds, save them in individual tables for each round.
+            for r in range(self.nr_rounds):
+                # Split the values and map them to new columns. These correspond to the marks of the adjudicaotrs in order.
+                round_marks = df_qualifications.iloc[row_id_marks + r * row_id_round_offset, 1:]
+                round_marks.replace(float('Nan'), str('- ' * self.nr_adjudicators)[:-1], inplace=True)
+                df_round_marks = round_marks.str.split(' ', expand=True)
+                df_round_marks.columns = self.get_adjudicator_ids() # TODO
+                df_round_marks[self.cNR] = list(df_qualifications.columns)[1:]
+                df_round_marks.set_index(self.cNR, drop=True, inplace=True)
+                df_round_marks.index.name = self.cNR
+
+                # Etract the sums.
+                sums = df_qualifications.iloc[row_id_sums + r * row_id_round_offset, 1:]
+                sums.replace(float('NaN'), -1, inplace=True)
+                df_round_marks[self.cSUM] = sums
+
+                # Extract the qualification indications, and replace the values by binary ones.
+                quali = df_qualifications.iloc[row_id_quali + r * row_id_round_offset, 1:]
+                quali.replace(float('NaN'), False, inplace=True)
+                quali.replace('X', True, inplace=True)
+                # Add the sums as column to the DataFrame.
+                df_round_marks[self.cQUALI] = quali
+
+                # Store this round.
+                self.df_qualifications.append(df_round_marks)
+                if self.save_to_file: self.df_qualifications.to_csv(Path(f.DIR_DATA, f.FN.CSV_QUALI_ROUNDX.format(r)))
+                
+        except Exception as e:
+            print(f"Error when parsing the finals table:\n{e}")
+            self.comp_was_cancelled = True
+            return False
+        
+        return True
 
     def read_comp_info(self, general_only: bool = False) -> Dict[str, str]:
         
@@ -249,7 +488,24 @@ class CompetitionReader():
 
         if self.comp_was_cancelled or general_only: return None
         # Process the dict of adjudicators.
+
         # TODO: CONTINUE with parsing of all tables here. (in subfunctions)
+        self._parse_ranking_list_df()
+
+        self._parse_finals_df()
+
+        self._parse_qualification_round_df()
+
+        # Add additional information to the general information table.
+        additional_info: List[Dict[str, str]] = {
+            self.rNR_ROUNDS:    self.nr_rounds + 1,   
+            self.rNR_ADJDCTRS:  self.nr_adjudicators, 
+            self.rNR_COUPLES:   self.nr_couples
+        }
+        df_additional_info = pd.DataFrame(list(additional_info.items()), columns=[self.cCATEGORY, self.cVALUE])
+
+        self.df_general_info = pd.concat([self.df_general_info, df_additional_info])
+        if self.save_to_file: self.df_general_info.to_csv(Path(f.DIR_DATA, f.FN.CSV_GENERAL_INFO))        
 
     def assign_data_dfs(self, verbose: bool=False) -> bool:
         cancelled: bool = True

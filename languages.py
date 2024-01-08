@@ -49,6 +49,7 @@ class LanguageConstants(ABC):
     PLACEMENT: str              = 'Placement'
     # The number is the identifyer number of the couple in the tournament.
     NR: str                     = 'Nr.'
+    COUPLE_NR: str              = 'Startnumber'
     KEY_FINAL: str              = 'Final'
     KEY_ROUND: str              = 'round'
     KEY_ADJUDICATOR: str        = 'Adjudicator'
@@ -120,6 +121,7 @@ class Constants_de(LanguageConstants):
     PLACEMENT       = 'Platz'
     ROUND           = 'Runde'
     NR              = 'Nr.'
+    COUPLE_NR       = 'Startnummer'
     KEY_FINAL       = 'Endrunde'
     KEY_ROUND       = 'runde'
     KEY_ADJUDICATOR = 'Wertungsrichter'

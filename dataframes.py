@@ -7,26 +7,7 @@ from datetime import date
 import dataframes as c
 import web_crawler as wc
 import competition_reader as comp_reader
-
-DIR_DATA: str           = "data"
-DIR_CRAWLED_SITES: str  = "crawled_websites"
-DIR_COMP_TABLES: str    = "comp_tables"
-DIR_CRAWLED_LINKS: str  = "crawled_links"
-
-TIME_STR_FORMAT: str    = "%B %d, %Y"
-
-class FilenameList():
-    # Filenames for tables in a single tournament.
-    CSV_GENERAL_INFO: str = "general_info.csv"
-    CSV_QUALI_ROUNDX: str = "quali_round{}.csv"
-    CSV_FINALS: str       = "finals.csv"
-    CSV_RANKING_LIST: str = "ranking.csv"
-    CSV_ADJUDICATORS: str = "adjudicators.csv"
-    # Filenames to maintain lists of urls.
-    CSV_FIND_CLUBS: str   = "find_clubs.csv"
-    CSV_CLUB: str         = "clubs.csv"
-    CSV_TOURNAMENTS: str  = "tournaments.csv"
-    CSV_COMPETITION: str  = "competitions.csv"
+import filenames as f
 
 class ScopeList():
     LOCAL: str          = "Local"           # TSK
@@ -275,8 +256,8 @@ class CompetitionsTable():
     COLUMNS: str            = [cURL, cSCOPE, cFEDERAL_STATE, cORIGIN, cCLUB, cTOURNAMENT_ID, cCRAWL_DATE,
                                cCOMP_DATE, cCOMP_NAME, cCOMP_ORGANISER, cCOMP_CLASS, cCOMP_AGE_GROUP, cCOMP_LEVEL, cCOMP_DISCIPLINE, 
                                cWDSF, cPROCESSED, cCANCELLED, cCOMMENT]
-    PATH: str               = f"{DIR_DATA}/{FilenameList.CSV_TOURNAMENTS}"
-    CLUB_HINTS_PATH: str    = f"{DIR_DATA}/{FilenameList.CSV_FIND_CLUBS}"
+    PATH: str               = f"{f.DIR_DATA}/{f.FN.CSV_TOURNAMENTS}"
+    CLUB_HINTS_PATH: str    = f"{f.DIR_DATA}/{f.FN.CSV_FIND_CLUBS}"
 
     # To identify that a site is a competition site, look for this url-ending.
     KEY_COMP_URL_ENDS: List[str]    = ['/index.htm']
@@ -594,7 +575,7 @@ class CompetitionsDf():
     cPROCESSED: str      = 'Processed'
 
     COLUMNS: str    = [cTOURNAMENT_ID, cCOMPETITION_ID, cURL, cORIGIN, cCRAWL_DATE, cPROCESSED]
-    PATH: str       = f"{DIR_DATA}/{FilenameList.CSV_COMPETITION}"
+    PATH: str       = f"{f.DIR_DATA}/{f.FN.CSV_COMPETITION}"
 
     # To identify that a site points to competition sites.
     KEY_URL_ANCHOR: str  = '/index.htm'
@@ -737,7 +718,7 @@ class AdjudicatorDf():
     cID: str                 = 'Id'
     
     COLUMNS: str = [cFULL_NAME_AND_CLUB, cNAME, cSURNAME, cCLUB, cID]
-    PATH: str    = f"{DIR_DATA}/{FilenameList.CSV_ADJUDICATORS}"
+    PATH: str    = f"{f.DIR_DATA}/{f.FN.CSV_ADJUDICATORS}"
     
     # There is only one such table, thus this class follows the Singleton pattern.
     def __new__(cls):
