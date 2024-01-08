@@ -19,7 +19,7 @@ import time
 from collections import deque
 
 # Local imports.
-import dataframes as c
+import data_manager as c
 
 def webpage_is_html(source_code: str) -> bool:
     # Note that this only contains the lower case variation! For both 'doctype' and 'htm' ('html') there

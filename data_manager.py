@@ -4,7 +4,7 @@ import pandas as pd
 import os
 from datetime import date
 
-import dataframes as c
+import data_manager as c
 import web_crawler as wc
 import competition_reader as comp_reader
 import filenames as f
@@ -33,7 +33,6 @@ class FederalStateList():
     SCHLESWIG_HOLSTEIN: str = 'Schleswig-Holstein'
     THUERINGEN: str         = 'Thüringen'
 
-
 class ClubsTable():
     """ This class defines the DataFrame to hold urls to clubs in Germany.
         The class is able to load, save and append to the DataFrame.
@@ -47,8 +46,8 @@ class ClubsTable():
     cCRAWL_DATE: str     = 'Crawl date'
 
     COLUMNS: str            = [cURL, cFEDERAL_STATE, cORIGIN, cFOUND_COMPS, cCRAWL_DATE]
-    PATH: str               = f"{DIR_DATA}/{FilenameList.CSV_CLUB}"
-    CLUB_HINTS_PATH: str    = f"{DIR_DATA}/{FilenameList.CSV_FIND_CLUBS}"
+    PATH: str               = f"{f.DIR_DATA}/{f.FN.CSV_CLUB}"
+    CLUB_HINTS_PATH: str    = f"{f.DIR_DATA}/{f.FN.CSV_FIND_CLUBS}"
 
     BAD_URL_SAMPLE: List[str]     = ['login', 'Login', 'LOGIN']
     BAD_LINK_PREFIXES: List[str]  = ['mailto', 'tel', '#', '?s']
@@ -223,7 +222,6 @@ class Competition():
 
     def save_results_to_dir(self, dir_name: str = None):
         pass
-
 
 class CompetitionsTable():
     """ This class defines the DataFrame to hold urls to websites where tournament sites are stored.
@@ -789,7 +787,8 @@ class AdjudicatorDf():
         self.df = pd.concat([self.df, pd.DataFrame(new_entries)], axis=0, ignore_index=True)
         self.save_df()
         return new_urls_ctr
-    
+
+
 def get_site_name_from_url(url: str) -> str:
     """Strips a given url to the name of the main domain and return it."""
     return urlparse(url).netloc

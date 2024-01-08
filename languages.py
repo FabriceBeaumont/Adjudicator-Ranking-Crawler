@@ -29,6 +29,7 @@ class LanguageConstants(ABC):
     RANK: str           = 'Rank'
     # The placement refers to any points in any computation while computing the ranks.
     PLACEMENT: str      = 'Placement'
+    TOTAL: str          = 'Total'
 
     DANCE: str          = 'Dance'
     ROUND: str          = 'Round'
@@ -114,11 +115,13 @@ class Constants_de(LanguageConstants):
     LW_s = "LW"
     WW_l = "Wiener Walzer"
     WW_s = "WW"
+    QS_s = "QU"
 
     KEY_ORGANZIER   = 'Veranstalter'
     KEY_MASTER_OF_CEREMONY = 'Ausrichter'
     COUPLE          = 'Paar'
     PLACEMENT       = 'Platz'
+    TOTAL           = 'PZ'
     ROUND           = 'Runde'
     NR              = 'Nr.'
     COUPLE_NR       = 'Startnummer'
